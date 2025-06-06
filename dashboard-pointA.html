@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slot Machines Monitoring - Point A</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --accent: #1abc9c;
+            --accent-dark: #16a085;
+            --sidebar-bg: #222;
+            --sidebar-width: 220px;
+            --glass-bg: rgba(255,255,255,0.18);
+            --glass-border: #ececec;
+            --header-dark: #222;
+        }
+        html { font-size: 15px; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #f8f6f0 0%, #fdfcfb 100%);
+            color: #111;
+            margin: 0;
+            padding: 0;
+        }
+        .osm-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(255,255,255,0.18);
+            z-index: -1;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 10rem;
+            color: rgba(0,0,0,0.07);
+            font-weight: bold;
+            pointer-events: none;
+            user-select: none;
+            letter-spacing: 2rem;
+            font-family: 'Poppins', sans-serif;
+            text-shadow: 0 2px 8px #fff, 0 0px 2px #ececec;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0 10px 0;
+            z-index: 10;
+        }
+        .sidebar .logo {
+            font-size: 1.5rem;
+            color: #111;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 8px 0;
+            box-shadow: 0 2px 8px #ececec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar nav a {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 24px;
+            border-radius: 5px 0 0 5px;
+            transition: background 0.3s;
+            font-size: 1rem;
+        }
+        .sidebar nav a i { margin-right: 10px; }
+        .sidebar nav a span { display: inline; }
+        .sidebar nav a.active, .sidebar nav a:hover {
+            background: #1abc9c;
+            color: #fff;
+        }
+        .sidebar-footer a, .sidebar-footer button {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 24px;
+            border-radius: 5px;
+            background: #16a085;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .sidebar-footer a i, .sidebar-footer button i { margin-right: 10px; }
+        .sidebar-footer button:hover { background: #e74c3c; }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 0;
+            min-height: 100vh;
+            box-sizing: border-box;
+            width: calc(100vw - var(--sidebar-width));
+            overflow-x: auto;
+            color: #111;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 24px 40px 0 40px;
+        }
+        .live-clock {
+            font-size: 1.2rem;
+            color: #111;
+            background: #f5f5f5;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 8px #ececec;
+        }
+        .container {
+            padding: 0 24px 24px 24px;
+            max-width: 1200px;
+            margin: auto;
+            box-sizing: border-box;
+            color: #111;
+        }
+        .dashboard-widgets {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .widget-card {
+            flex: 1 1 200px;
+            min-width: 200px;
+            background: var(--glass-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 18px #ececec;
+            border: 1.5px solid var(--glass-border);
+            padding: 18px 12px 12px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            margin-bottom: 0;
+            color: #111;
+        }
+        .widget-title {
+            font-size: 1.05rem;
+            color: #111;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 2px 8px #fff, 0 0px 2px #ececec;
+        }
+        .widget-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #111;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 8px #fff;
+        }
+        .widget-action {
+            margin-top: 8px;
+            background: #1abc9c;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 2px 8px #ececec;
+        }
+        .widget-action:hover {
+            background: #16a085;
+            color: #fff;
+        }
+        .slot-machine-count {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #1abc9c;
+            text-align: center;
+            margin: 10px 0 0 0;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px #fff;
+        }
+        #machinesList {
+            margin: 0 0 0 0;
+            width: 100%;
+            color: #111;
+            font-size: 1.05rem;
+            text-align: center;
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px #ececec;
+            border: 1.5px solid var(--glass-border);
+            margin-bottom: 20px;
+            padding: 18px 12px 12px 12px;
+            color: #111;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .header-section h1 {
+            font-size: 1.5rem;
+            color: #111;
+            margin-bottom: 6px;
+            text-shadow: 0 4px 24px #fff, 0 0px 2px #ececec;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+        .header-section p {
+            font-size: 1rem;
+            color: #222;
+            font-weight: 600;
+            text-shadow: 0 2px 8px #fff;
+        }
+        .date-select {
+            margin: 8px 0 10px 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .date-select label {
+            color: #111;
+            font-weight: 600;
+        }
+        .date-select input[type="date"] {
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1.5px solid #ececec;
+            font-size: 1rem;
+            color: #111;
+            background: #f8f6f0;
+        }
+        footer {
+            text-align: center;
+            padding: 8px 0;
+            background: rgba(255,255,255,0.18);
+            color: #111;
+            position: fixed;
+            bottom: 0;
+            left: var(--sidebar-width);
+            width: calc(100vw - var(--sidebar-width));
+            font-size: 13px;
+            z-index: 1001;
+            border-top: 1.5px solid var(--glass-border);
+            backdrop-filter: blur(8px);
+            text-shadow: 0 2px 8px #fff;
+        }
+        @media (max-width: 900px) {
+            .dashboard-widgets { flex-direction: column; gap: 10px; }
+            .main-content, .container { padding-left: 2vw; padding-right: 2vw; }
+            .sidebar { width: 48px; padding-top: 10px; }
+            .sidebar .logo { font-size: 1rem; margin-bottom: 10px; }
+            .sidebar nav a { padding: 8px 4px; font-size: 0.9rem; justify-content: center; }
+            .sidebar nav a span { display: none; }
+            .main-content { margin-left: 48px; width: calc(100vw - 48px);}
+            footer { left: 48px; width: calc(100vw - 48px);}
+        }
+        @media (max-width: 600px) {
+            .header-section h1 { font-size: 1.1rem; }
+            .glass-card { padding: 8px 2vw 6px 2vw; }
+            .main-content, .container { padding: 0 1vw 20px 1vw; }
+            .top-bar { padding: 8px 1vw 0 1vw; }
+        }
+        /* Modal styles */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.25); justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #fff; padding: 18px 12px 12px 12px; border-radius: 12px; max-width: 340px; width: 90vw;
+            box-shadow: 0 8px 32px #ececec; position: relative;
+            color: #111;
+        }
+        .close {
+            position: absolute; top: 8px; right: 12px; font-size: 1.5rem; color: #888; cursor: pointer;
+        }
+        .modal-content h2 { color: #111; }
+        .modal-content label { color: #111; }
+        .modal-content input { color: #111; background: #f8f6f0; }
+        .success-msg { color: #388e3c; font-weight: bold; margin-bottom: 8px; }
+        .error-msg { color: #c0392b; font-weight: bold; margin-bottom: 8px; }
+        .on-duty-modern {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #222;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            padding: 14px 18px 10px 18px;
+            margin: 0;
+            box-shadow: 0 2px 12px #ececec;
+            min-width: 180px;
+        }
+        .on-duty-modern .duty-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 6px;
+            gap: 8px;
+        }
+        .on-duty-modern .duty-label {
+            min-width: 110px;
+            font-weight: 600;
+            color: #1abc9c;
+            letter-spacing: 0.5px;
+            font-size: 0.98em;
+            flex-shrink: 0;
+        }
+        .on-duty-modern .duty-value {
+            flex: 1;
+            color: #222;
+            font-weight: 500;
+            word-break: break-word;
+        }
+        @media (max-width: 600px) {
+            .on-duty-modern {
+                padding: 10px 8px 8px 8px;
+                font-size: 0.97rem;
+            }
+            .on-duty-modern .duty-label {
+                min-width: 80px;
+                font-size: 0.95em;
+            }
+        }
+        .dashboard-quote {
+            width: 100%;
+            margin: 40px 0 0 0;
+            padding: 32px 0 24px 0;
+            background: linear-gradient(90deg, #f8f6f0 60%, #e0f7fa 100%);
+            text-align: center;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 2px 18px #ececec;
+        }
+        .dashboard-quote .quote-text {
+            font-size: 1.25rem;
+            color: #16a085;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        .dashboard-quote .quote-text i {
+            color: #1abc9c;
+            margin: 0 6px;
+        }
+        .dashboard-quote .quote-intro {
+            font-size: 1.05rem;
+            color: #222;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        @media (max-width: 700px) {
+            .slot-machine-count { font-size: 2rem; }
+            .dashboard-quote { font-size: 0.98rem; padding: 18px 0 14px 0; }
+            .dashboard-quote .quote-text { font-size: 1.05rem; }
+        }
+        .slot-machine-latest {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #1abc9c;
+            text-align: center;
+            margin: 18px 0 0 0;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px #fff;
+            min-height: 2.5em;
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(34, 34, 34, 0.35);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px #2224;
+            padding: 32px 28px 24px 28px;
+            min-width: 340px;
+            max-width: 95vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1abc9c;
+            margin-bottom: 18px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #e74c3c;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            padding: 0 8px;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #c0392b;
+        }
+        #modalMonitoringList .hourly-entry {
+            background: rgba(26, 188, 156, 0.07);
+            padding: 10px 16px;
+            border-radius: 7px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px #ececec;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        #modalMonitoringList .hourly-entry strong {
+            color: #1abc9c;
+            min-width: 70px;
+        }
+        #modalMonitoringList .hourly-entry span {
+            margin-left: 10px;
+            font-size: 1.01em;
+        }
+    </style>
+</head>
+<body>
+<script>
+    // Only allow admin1 (Point A) or manager
+    const role = localStorage.getItem('userRole');
+    const point = localStorage.getItem('point');
+    if (!(role === 'admin' && point === 'A') && role !== 'manager') {
+      window.location.href = 'login.html';
+    }
+</script>
+    <!-- OSM text as background watermark -->
+    <div class="osm-bg">OSM</div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <!-- Slot machine SVG icon for OSM logo -->
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="vertical-align:middle;margin-right:8px;" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="7" width="26" height="18" rx="5" fill="#fffbe6" stroke="#1abc9c" stroke-width="2"/>
+                <rect x="7" y="11" width="18" height="10" rx="3" fill="#43c6ac" stroke="#16a085" stroke-width="1.5"/>
+                <circle cx="12" cy="16" r="2" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+                <circle cx="16" cy="16" r="2" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+                <circle cx="20" cy="16" r="2" fill="#43c6ac" stroke="#222" stroke-width="1"/>
+                <rect x="13" y="20" width="6" height="2" rx="1" fill="#222"/>
+                <rect x="27" y="10" width="2" height="8" rx="1" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+                <circle cx="28" cy="10" r="1" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+            </svg>
+            OSM
+        </div>
+        <nav>
+            <a href="index.html" class="active"><i class="fa-solid fa-chess-slot"></i> <span>Dashboard</span></a>
+            <a href="technician.html"><i class="fa-solid fa-users-gear"></i> <span>Technician</span></a>
+            <a href="slot-machines.html"><i class="fa-solid fa-desktop"></i> <span>Monitoring</span></a>
+            <a href="error-report.html"><i class="fa-solid fa-triangle-exclamation"></i> <span>Error Report</span></a>
+            <a href="win-loss.html"><i class="fa-solid fa-coins"></i> <span>Win/Loss</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#"><i class="fa-solid fa-user"></i> <span>Profile</span></a>
+            <a href="#"><i class="fa-solid fa-gear"></i> <span>Settings</span></a>
+            <button onclick="alert('Logging out...')"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></button>
+        </div>
+    </aside>
+    <div class="main-content">
+        <div class="top-bar">
+            <span id="liveClock" class="live-clock"></span>
+        </div>
+        <div class="container">
+            <div class="dashboard-widgets">
+                <!-- Slot Machines Widget -->
+                <div class="widget-card">
+                    <div class="widget-title">
+                        <span style="width:1.2em;display:inline-block;vertical-align:middle;">
+                            <svg viewBox="0 0 32 32" width="1.1em" height="1.1em" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="5" y="8" width="22" height="16" rx="3" fill="#1abc9c" stroke="#222" stroke-width="2"/>
+                                <rect x="8" y="11" width="16" height="10" rx="2" fill="#fffbe6" stroke="#222" stroke-width="1"/>
+                                <circle cx="12" cy="16" r="2" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+                                <circle cx="16" cy="16" r="2" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+                                <circle cx="20" cy="16" r="2" fill="#43c6ac" stroke="#222" stroke-width="1"/>
+                                <rect x="13" y="21" width="6" height="2" rx="1" fill="#222"/>
+                                <rect x="27" y="10" width="2" height="8" rx="1" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+                                <circle cx="28" cy="10" r="1" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+                            </svg>
+                        </span>
+                        Slot Machines
+                    </div>
+                    <div id="latestMachineName" class="slot-machine-latest"></div>
+                    <button class="widget-action" onclick="openModal('addMachineModal')"><i class="fa-solid fa-plus"></i> Add Machine</button>
+                </div>
+                <!-- Jackpot Monitoring Widget -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-star"></i> JACKPOT MONITORING</div>
+                    <div class="date-select">
+                        <label for="jackpotDate">Date:</label>
+                        <input type="date" id="jackpotDate" value="">
+                    </div>
+                    <div class="widget-value" id="jackpotCount">0</div>
+                    <button class="widget-action" onclick="openModal('addJackpotModal')"><i class="fa-solid fa-plus"></i> Add Jackpot</button>
+                </div>
+                <!-- Total Error Encountered Widget -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-bug"></i> TOTAL ERROR ENCOUNTERED</div>
+                    <div class="date-select" style="margin-bottom:8px;">
+                        <label for="errorTechFilter" style="color:#111;font-weight:600;">Technician:</label>
+                        <select id="errorTechFilter" style="padding:4px 8px;border-radius:6px;border:1.5px solid #ececec;font-size:1rem;background:#f8f6f0;">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                    <div class="widget-value" id="errorCount">0</div>
+                    <div id="dashboardErrorList"></div>
+                    <button class="widget-action" onclick="openModal('addErrorModal')"><i class="fa-solid fa-plus"></i> Add Error</button>
+                </div>
+                <!-- Daily Win/Loss Widget -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-chart-line"></i> Daily WIN/LOSS</div>
+                    <div class="date-select">
+                        <label for="winlossDate">Date:</label>
+                        <input type="date" id="winlossDate" value="">
+                    </div>
+                    <div class="widget-value" id="winLossValue">₱0</div>
+                    <button class="widget-action" onclick="openModal('addWinLossModal')"><i class="fa-solid fa-plus"></i> Add Win/Loss</button>
+                </div>
+                <!-- Technicians On Duty Widget -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-users-gear"></i> Technicians On Duty</div>
+                    <div class="on-duty-modern" id="onDutyTechs"></div>
+                </div>
+                <!-- Hourly Machine Monitoring Widget -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-clock"></i> Hourly Machine Monitoring</div>
+                    <div id="dashboardHourlyMonitoring"></div>
+                    <button class="widget-action" onclick="openHourlyModal()" style="margin: 10px auto 0 auto; display: block;">
+                        View All Entries
+                    </button>
+                </div>
+            </div>
+            <header class="header-section">
+                <h1>Slot Machines Monitoring - Point A</h1>
+                <p>Track your machines' status and monitor the jackpots, errors, and daily win/loss</p>
+            </header>
+            <div class="glass-card" style="margin-bottom:60px; text-align:center;">
+                <div style="font-size:1.1rem;font-weight:600;margin-bottom:10px;">Welcome to your monitoring dashboard!</div>
+                <ul style="color:#222;line-height:1.7;font-size:1rem;margin:0 0 16px 1em;text-align:left;display:inline-block;">
+                    <li>See all your slot machines and their status at a glance.</li>
+                    <li>Monitor jackpots and errors encountered.</li>
+                    <li>Track daily win/loss by date.</li>
+                    <li>Use the sidebar to navigate to more details.</li>
+                </ul>
+                <div class="quote-text" style="margin-top:18px;font-size:1.15rem;color:#16a085;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <i class="fa-solid fa-quote-left"></i>
+                    <span>“Success is the sum of small efforts, repeated day in and day out.”</span>
+                    <i class="fa-solid fa-quote-right"></i>
+                </div>
+                <div class="quote-intro" style="font-size:1.02rem;color:#222;margin-top:6px;font-weight:500;">
+                    Stay updated, work smart, and keep the floor running smoothly!
+                </div>
+            </div>
+        </div>
+        <footer>
+            <p>&copy; 2025 Slot Monitoring System | All Rights Reserved</p>
+        </footer>
+    </div>
+    <!-- Add Machine Modal -->
+    <div id="addMachineModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('addMachineModal')">&times;</span>
+        <h2>Add Machine</h2>
+        <form id="addMachineForm">
+          <label>Machine Name</label>
+          <input type="text" id="modalMachineName" required>
+          <button type="submit">Add</button>
+          <div id="addMachineMsg"></div>
+        </form>
+      </div>
+    </div>
+    <!-- Add Jackpot Modal -->
+    <div id="addJackpotModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('addJackpotModal')">&times;</span>
+        <h2>Add Jackpot</h2>
+        <form id="addJackpotForm">
+          <label>Jackpot Amount</label>
+          <input type="number" id="jackpotAmount" min="0" required>
+          <button type="submit">Add</button>
+          <div id="addJackpotMsg"></div>
+        </form>
+      </div>
+    </div>
+    <!-- Add Error Modal -->
+    <div id="addErrorModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('addErrorModal')">&times;</span>
+        <h2>Add Error</h2>
+        <form id="addErrorForm">
+          <label>Error Description</label>
+          <input type="text" id="errorDesc" required>
+          <label>Technician</label>
+          <select id="errorTech" required>
+              <option value="">Select Technician</option>
+              <option value="Anthony Lastra">Anthony Lastra</option>
+              <option value="Cliff Richard Delos Arcos">Cliff Richard Delos Arcos</option>
+              <option value="Edward Panaligan">Edward Panaligan</option>
+              <option value="Eduardo Ilaga">Eduardo Ilaga</option>
+              <option value="Erdie Boy Leonor">Erdie Boy Leonor</option>
+              <option value="Gilbert Culabat">Gilbert Culabat</option>
+              <option value="Jason Sebarre">Jason Sebarre</option>
+              <option value="Julius Napoleon Rempillo">Julius Napoleon Rempillo</option>
+              <option value="Raymund Colar">Raymund Colar</option>
+              <option value="Roel Natividad">Roel Natividad</option>
+          </select>
+          <label>Date</label>
+          <input type="date" id="errorDate" required>
+          <label>Time</label>
+          <input type="time" id="errorTime" required>
+          <button type="submit">Add</button>
+          <div id="addErrorMsg"></div>
+        </form>
+      </div>
+    </div>
+    <!-- Add Win/Loss Modal -->
+    <div id="addWinLossModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('addWinLossModal')">&times;</span>
+        <h2>Add Win/Loss</h2>
+        <form id="addWinLossForm">
+          <label>Date</label>
+          <input type="date" id="winLossDateInput" required>
+          <label>Win/Loss Amount</label>
+          <input type="number" id="winLossAmount" required>
+          <button type="submit">Add</button>
+          <div id="addWinLossMsg"></div>
+        </form>
+      </div>
+    </div>
+    <!-- Add Technician On Duty Modal -->
+    <div id="addOnDutyModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('addOnDutyModal')">&times;</span>
+        <h2>Set Technicians On Duty</h2>
+        <form id="addOnDutyForm">
+          <label>Date</label>
+          <input type="date" id="onDutyDate" required>
+          <label>Shift</label>
+          <input type="text" id="onDutyShift" required>
+          <label>Supervisor</label>
+          <input type="text" id="onDutySupervisor" required>
+          <label>OSM Eng.</label>
+          <input type="text" id="onDutyOsmEng" required>
+          <label>Team Leader(s) (comma separated)</label>
+          <input type="text" id="onDutyTeamLeaders">
+          <label>Technician(s) (comma separated)</label>
+          <input type="text" id="onDutyTechnicians">
+          <button type="submit">Save</button>
+          <div id="addOnDutyMsg"></div>
+        </form>
+      </div>
+    </div>
+    <!-- Hourly Monitoring Modal -->
+    <div id="hourlyMonitoringModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Hourly Machine Monitoring Entries</span>
+                <button class="modal-close" onclick="closeHourlyModal()">&times;</button>
+            </div>
+            <div id="modalMonitoringList"></div>
+        </div>
+    </div>
+    <script>
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('liveClock').textContent = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Show only the latest added machine, big and centered
+        function updateMachinesList() {
+            const machines = JSON.parse(localStorage.getItem('machines_A')) || [];
+            const latestDiv = document.getElementById('latestMachineName');
+            if (!latestDiv) return;
+            if (machines.length === 0) {
+                latestDiv.innerHTML = "<div style='color:#888;font-size:1.1rem;'>No machines added yet.</div>";
+            } else {
+                const last = machines[machines.length - 1];
+                latestDiv.innerHTML = `<div>${last.name}</div>`;
+            }
+        }
+
+        // JACKPOT
+        function updateJackpot() {
+            const jackpots = JSON.parse(localStorage.getItem('jackpots_A')) || [];
+            const selectedDate = document.getElementById('jackpotDate').value;
+            let total = 0;
+            jackpots.forEach(j => {
+                if (j.date === selectedDate) total += Number(j.amount);
+            });
+            document.getElementById('jackpotCount').textContent = total.toLocaleString();
+        }
+
+        // Populate technician dropdown with unique names from errors
+        function populateErrorTechFilter() {
+            const errors = JSON.parse(localStorage.getItem('errors_A')) || [];
+            const techs = [...new Set(errors.map(e => e.technician).filter(Boolean))];
+            const select = document.getElementById('errorTechFilter');
+            if (!select) return;
+            select.innerHTML = '<option value="">All</option>' +
+                techs.map(t => `<option value="${t}">${t}</option>`).join('');
+        }
+
+        // ERROR
+        function updateError() {
+            const errors = JSON.parse(localStorage.getItem('errors_A')) || [];
+            const selectedTech = document.getElementById('errorTechFilter') ? document.getElementById('errorTechFilter').value : "";
+            const filtered = selectedTech ? errors.filter(e => e.technician === selectedTech) : errors;
+            document.getElementById('errorCount').textContent = filtered.length;
+
+            const errorListDiv = document.getElementById('dashboardErrorList');
+            if (errorListDiv) {
+                if (filtered.length === 0) {
+                    errorListDiv.innerHTML = "<div style='color:#888'>No errors reported.</div>";
+                } else {
+                    const recent = filtered.slice(-3).reverse();
+                    errorListDiv.innerHTML = recent.map(e => `
+                        <div class="hourly-entry" style="font-size:0.98em;padding:6px 0;">
+                            <strong>${e.date} ${e.time}</strong>
+                            <span>${e.desc}</span>
+                        </div>
+                    `).join('');
+                }
+            }
+            populateErrorTechFilter();
+        }
+
+        // WIN/LOSS
+        function updateWinLoss() {
+            const winLosses = JSON.parse(localStorage.getItem('winLosses_A')) || [];
+            const selectedDate = document.getElementById('winlossDate').value;
+            let total = 0;
+            winLosses.forEach(wl => {
+                if (wl.date === selectedDate) total += Number(wl.amount);
+            });
+            document.getElementById('winLossValue').textContent = "₱" + total.toLocaleString();
+        }
+
+        // Set today's date as default for jackpot and win/loss
+        function setTodayDate() {
+            const today = new Date().toISOString().slice(0,10);
+            document.getElementById('winlossDate').value = today;
+            document.getElementById('jackpotDate').value = today;
+        }
+
+        // Show technicians on duty
+        function displayOnDutyTechs() {
+            const data = JSON.parse(localStorage.getItem('onDutyTechnician_A'));
+            const el = document.getElementById('onDutyTechs');
+            if (!el) return;
+            if (!data) {
+                el.innerHTML = "<span style='color:#888;'>No data set.</span>";
+                return;
+            }
+            let html = "";
+            if (data.shiftDate)
+                html += `<div class="duty-row"><span class="duty-label">Date:</span><span class="duty-value">${data.shiftDate}</span></div>`;
+            if (data.shiftTime)
+                html += `<div class="duty-row"><span class="duty-label">Shift:</span><span class="duty-value">${data.shiftTime}</span></div>`;
+            if (data.supervisor)
+                html += `<div class="duty-row"><span class="duty-label">Supervisor:</span><span class="duty-value">${data.supervisor}</span></div>`;
+            if (data.osmEng)
+                html += `<div class="duty-row"><span class="duty-label">OSM Eng.:</span><span class="duty-value">${data.osmEng}</span></div>`;
+            if (Array.isArray(data.teamLeaders) && data.teamLeaders.length)
+                html += `<div class="duty-row"><span class="duty-label">Team Leader(s):</span><span class="duty-value">${data.teamLeaders.join(", ")}</span></div>`;
+            if (Array.isArray(data.technicians) && data.technicians.length)
+                html += `<div class="duty-row"><span class="duty-label">Technician(s):</span><span class="duty-value">${data.technicians.join(", ")}</span></div>`;
+            el.innerHTML = html || "<span style='color:#888;'>No data set.</span>";
+        }
+
+        // Initial update
+        setTodayDate();
+        updateMachinesList();
+        updateJackpot();
+        updateError();
+        updateWinLoss();
+        displayOnDutyTechs();
+
+        // Date change for jackpot and win/loss
+        document.getElementById('winlossDate').addEventListener('change', updateWinLoss);
+        document.getElementById('jackpotDate').addEventListener('change', updateJackpot);
+
+        // Modal helpers
+        function openModal(id) {
+            document.getElementById(id).style.display = "flex";
+        }
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+            if(id === 'addMachineModal') document.getElementById('addMachineMsg').innerHTML = '';
+            if(id === 'addJackpotModal') document.getElementById('addJackpotMsg').innerHTML = '';
+            if(id === 'addErrorModal') document.getElementById('addErrorMsg').innerHTML = '';
+            if(id === 'addWinLossModal') document.getElementById('addWinLossMsg').innerHTML = '';
+            if(id === 'addOnDutyModal') document.getElementById('addOnDutyMsg').innerHTML = '';
+        }
+
+        // Add Machine
+        document.getElementById('addMachineForm').onsubmit = function(e) {
+            e.preventDefault();
+            const machine = document.getElementById('modalMachineName').value.trim();
+            if (!machine) {
+                document.getElementById('addMachineMsg').innerHTML = '<div class="error-msg">Please enter a machine name.</div>';
+                return;
+            }
+            let machines = JSON.parse(localStorage.getItem('machines_A')) || [];
+            machines.push({ name: machine });
+            localStorage.setItem('machines_A', JSON.stringify(machines));
+            document.getElementById('addMachineMsg').innerHTML = '<div class="success-msg">Machine added!</div>';
+            this.reset();
+            updateMachinesList();
+            setTimeout(() => { closeModal('addMachineModal'); }, 600);
+        };
+
+        // Add Jackpot
+        document.getElementById('addJackpotForm').onsubmit = function(e) {
+            e.preventDefault();
+            const amount = document.getElementById('jackpotAmount').value.trim();
+            const date = document.getElementById('jackpotDate').value;
+            if (!amount || !date) {
+                document.getElementById('addJackpotMsg').innerHTML = '<div class="error-msg">Please enter jackpot amount and select date.</div>';
+                return;
+            }
+            let jackpots = JSON.parse(localStorage.getItem('jackpots_A')) || [];
+            jackpots.push({ amount: Number(amount), date });
+            localStorage.setItem('jackpots_A', JSON.stringify(jackpots));
+            document.getElementById('addJackpotMsg').innerHTML = '<div class="success-msg">Jackpot added!</div>';
+            this.reset();
+            updateJackpot();
+            setTimeout(() => { closeModal('addJackpotModal'); }, 600);
+        };
+
+        // Add Error
+        document.getElementById('addErrorForm').onsubmit = function(e) {
+            e.preventDefault();
+            const desc = document.getElementById('errorDesc').value.trim();
+            const technician = document.getElementById('errorTech').value.trim();
+            const date = document.getElementById('errorDate').value;
+            const time = document.getElementById('errorTime').value;
+            if (!desc || !technician || !date || !time) {
+                document.getElementById('addErrorMsg').innerHTML = '<div class="error-msg">Please fill in all fields.</div>';
+                return;
+            }
+            let errors = JSON.parse(localStorage.getItem('errors_A')) || [];
+            errors.push({ desc, technician, date, time });
+            localStorage.setItem('errors_A', JSON.stringify(errors));
+            document.getElementById('addErrorMsg').innerHTML = '<div class="success-msg">Error added!</div>';
+            this.reset();
+            updateError();
+            setTimeout(() => { closeModal('addErrorModal'); }, 600);
+        };
+
+        // Add Win/Loss
+        document.getElementById('addWinLossForm').onsubmit = function(e) {
+            e.preventDefault();
+            const date = document.getElementById('winLossDateInput').value;
+            const amount = document.getElementById('winLossAmount').value.trim();
+            if (!date || !amount) {
+                document.getElementById('addWinLossMsg').innerHTML = '<div class="error-msg">Please fill in all fields.</div>';
+                return;
+            }
+            let winLosses = JSON.parse(localStorage.getItem('winLosses_A')) || [];
+            winLosses.push({ date, amount: Number(amount) });
+            localStorage.setItem('winLosses_A', JSON.stringify(winLosses));
+            document.getElementById('addWinLossMsg').innerHTML = '<div class="success-msg">Win/Loss entry added!</div>';
+            this.reset();
+            updateWinLoss();
+            setTimeout(() => { closeModal('addWinLossModal'); }, 600);
+        };
+
+        // Add Technician On Duty
+        document.getElementById('addOnDutyForm').onsubmit = function(e) {
+            e.preventDefault();
+            const shiftDate = document.getElementById('onDutyDate').value;
+            const shiftTime = document.getElementById('onDutyShift').value;
+            const supervisor = document.getElementById('onDutySupervisor').value;
+            const osmEng = document.getElementById('onDutyOsmEng').value;
+            const teamLeaders = document.getElementById('onDutyTeamLeaders').value.split(',').map(s => s.trim()).filter(Boolean);
+            const technicians = document.getElementById('onDutyTechnicians').value.split(',').map(s => s.trim()).filter(Boolean);
+
+            if (!shiftDate || !shiftTime || !supervisor || !osmEng) {
+                document.getElementById('addOnDutyMsg').innerHTML = '<div class="error-msg">Please fill in all required fields.</div>';
+                return;
+            }
+
+            const data = { shiftDate, shiftTime, supervisor, osmEng, teamLeaders, technicians };
+            localStorage.setItem('onDutyTechnician_A', JSON.stringify(data));
+            document.getElementById('addOnDutyMsg').innerHTML = '<div class="success-msg">On Duty updated!</div>';
+            this.reset();
+            displayOnDutyTechs();
+            setTimeout(() => { closeModal('addOnDutyModal'); }, 600);
+        };
+
+        // Modal open/close functions
+        function openHourlyModal() {
+            document.getElementById('hourlyMonitoringModal').style.display = 'flex';
+            showModalMonitoringList();
+        }
+        function closeHourlyModal() {
+            document.getElementById('hourlyMonitoringModal').style.display = 'none';
+        }
+
+        // Show monitoring entries in modal
+        function showModalMonitoringList() {
+            const list = document.getElementById('modalMonitoringList');
+            const data = JSON.parse(localStorage.getItem('hourlyMonitoring_A')) || [];
+            if (data.length === 0) {
+                list.innerHTML = "<div style='color:#888'>No monitoring data found.</div>";
+                return;
+            }
+            list.innerHTML = data.map(entry => `
+                <div class="hourly-entry">
+                    <strong>${entry.time}</strong>
+                    <span>Machine: ${entry.machine}</span>
+                    <span>Technician: ${entry.technician}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateDashboardHourlyMonitoring() {
+            const list = document.getElementById('dashboardHourlyMonitoring');
+            if (!list) return;
+            const data = JSON.parse(localStorage.getItem('hourlyMonitoring_A')) || [];
+            if (data.length === 0) {
+                list.innerHTML = "<div style='color:#888'>No monitoring data found.</div>";
+                return;
+            }
+            // Show the last 5 entries, most recent first
+            const recent = data.slice(-5).reverse();
+            list.innerHTML = recent.map(entry => `
+                <div class="hourly-entry" style="font-size:0.98em;padding:6px 0;">
+                    <strong>${entry.time}</strong>
+                    <span>Label: ${entry.machine}</span>
+                    <span>Technician: ${entry.technician}</span>
+                </div>
+            `).join('');
+        }
+
+        updateDashboardHourlyMonitoring();
+    </script>
+<script>
+// Only run if user is manager
+if (localStorage.getItem('userRole') === 'manager') {
+  // Hide Point C section if it exists
+  const pointCSection = document.getElementById('point-c-section');
+  if (pointCSection) {
+    pointCSection.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>

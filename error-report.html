@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error Report - Slot Machines Monitoring</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+        }
+        .osm-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            opacity: 0.8;
+        }
+        .sidebar {
+            width: 220px;
+            background: #222;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0 10px 0;
+            z-index: 10;
+        }
+        .sidebar .logo {
+            font-size: 1.5rem;
+            color: #111;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 8px 0;
+            box-shadow: 0 2px 8px #ececec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar nav a {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 24px;
+            border-radius: 5px 0 0 5px;
+            transition: background 0.3s;
+            font-size: 1rem;
+        }
+        .sidebar nav a i { margin-right: 10px; }
+        .sidebar nav a span { display: inline; }
+        .sidebar nav a.active, .sidebar nav a:hover {
+            background: #1abc9c;
+            color: #fff;
+        }
+        .sidebar-footer a, .sidebar-footer button {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 24px;
+            border-radius: 5px;
+            background: #16a085;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .sidebar-footer a i, .sidebar-footer button i { margin-right: 10px; }
+        .sidebar-footer button:hover { background: #e74c3c; }
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .live-clock {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+        }
+        .form-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+        }
+        textarea {
+            resize: vertical;
+            height: 150px;
+        }
+        button {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        @media (max-width: 900px) {
+            .sidebar { width: 48px; padding-top: 10px; }
+            .sidebar .logo { font-size: 1rem; margin-bottom: 10px; }
+            .sidebar nav a { padding: 8px 4px; font-size: 0.9rem; justify-content: center; }
+            .sidebar nav a span, .sidebar-footer a span, .sidebar-footer button span { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="osm-bg">OSM</div>
+    <!-- Sidebar Start -->
+    <aside class="sidebar">
+        <div class="logo">
+            <!-- Slot machine SVG icon for OSM logo -->
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="vertical-align:middle;margin-right:8px;" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="7" width="26" height="18" rx="5" fill="#fffbe6" stroke="#1abc9c" stroke-width="2"/>
+                <rect x="7" y="11" width="18" height="10" rx="3" fill="#43c6ac" stroke="#16a085" stroke-width="1.5"/>
+                <circle cx="12" cy="16" r="2" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+                <circle cx="16" cy="16" r="2" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+                <circle cx="20" cy="16" r="2" fill="#43c6ac" stroke="#222" stroke-width="1"/>
+                <rect x="13" y="20" width="6" height="2" rx="1" fill="#222"/>
+                <rect x="27" y="10" width="2" height="8" rx="1" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+                <circle cx="28" cy="10" r="1" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+            </svg>
+            OSM
+        </div>
+        <nav>
+            <a href="index.html"><i class="fa-solid fa-chess-slot"></i> <span>Dashboard</span></a>
+            <a href="technician.html"><i class="fa-solid fa-users-gear"></i> <span>Technician</span></a>
+            <a href="slot-machines.html"><i class="fa-solid fa-desktop"></i> <span>Monitoring</span></a>
+            <a href="error-report.html" class="active"><i class="fa-solid fa-triangle-exclamation"></i> <span>Error Report</span></a>
+            <a href="win-loss.html"><i class="fa-solid fa-coins"></i> <span>Win/Loss</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#"><i class="fa-solid fa-user"></i> <span>Profile</span></a>
+            <a href="#"><i class="fa-solid fa-gear"></i> <span>Settings</span></a>
+            <button onclick="alert('Logging out...')"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></button>
+        </div>
+    </aside>
+    <!-- Sidebar End -->
+    <div class="main-content">
+        <div class="top-bar">
+            <span id="liveClock" class="live-clock"></span>
+        </div>
+        <div class="container">
+            <div class="glass-card">
+                <div class="form-title">Add Error Report</div>
+                <form id="errorForm">
+                    <label>Time</label>
+                    <input type="time" id="errorTime" required>
+                    <label>Machine</label>
+                    <input type="text" id="errorMachine" required>
+                    <label>Description</label>
+                    <textarea id="errorDesc" required></textarea>
+                    <button type="submit">Add Error</button>
+                    <div id="errorMsg"></div>
+                </form>
+            </div>
+            <div class="glass-card">
+                <div class="form-title">Error Reports</div>
+                <div id="errorList"></div>
+            </div>
+        </div>
+        <footer>
+            <p>&copy; 2025 Slot Monitoring System | All Rights Reserved</p>
+        </footer>
+    </div>
+    <script>
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('liveClock').textContent = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Load and display error reports
+        function loadErrors() {
+            const list = document.getElementById('errorList');
+            const data = JSON.parse(localStorage.getItem('errorsToday')) || [];
+            if (data.length === 0) {
+                list.innerHTML = "<div style='color:#888'>No error reports found.</div>";
+                return;
+            }
+            list.innerHTML = data.map((entry, idx) => `
+                <div class="hourly-entry" style="background:linear-gradient(90deg,#e74c3c 60%,#c0392b 100%);">
+                    <strong>${entry.time}</strong>
+                    <span>Machine: ${entry.machine}</span>
+                    <span>Description: ${entry.desc}</span>
+                    <button onclick="deleteError(${idx})" style="margin-top:8px;background:#fff;color:#e74c3c;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">Delete</button>
+                </div>
+            `).join('');
+        }
+        loadErrors();
+
+        // Add new error
+        document.getElementById('errorForm').onsubmit = function(e) {
+            e.preventDefault();
+            const time = document.getElementById('errorTime').value;
+            const machine = document.getElementById('errorMachine').value.trim();
+            const desc = document.getElementById('errorDesc').value.trim();
+
+            if (!time || !machine || !desc) {
+                document.getElementById('errorMsg').innerHTML = '<div class="error-msg">Please fill in all fields.</div>';
+                return;
+            }
+
+            const data = JSON.parse(localStorage.getItem('errorsToday')) || [];
+            data.push({ time, machine, desc });
+            localStorage.setItem('errorsToday', JSON.stringify(data));
+            document.getElementById('errorMsg').innerHTML = '<div class="success-msg">Error added!</div>';
+            this.reset();
+            loadErrors();
+        };
+
+        // Delete error
+        function deleteError(idx) {
+            const data = JSON.parse(localStorage.getItem('errorsToday')) || [];
+            data.splice(idx, 1);
+            localStorage.setItem('errorsToday', JSON.stringify(data));
+            loadErrors();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technician - Manila (Point B)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <style>
+    :root {
+      --sidebar-width: 220px;
+      --sidebar-bg: #222;
+      --accent: #1abc9c;
+      --accent-dark: #16a085;
+    }
+    html { font-size: 15px; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(120deg, #f8f6f0 0%, #fdfcfb 100%);
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+    .osm-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(255,255,255,0.18);
+      z-index: -1;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 10rem;
+      color: rgba(0,0,0,0.07);
+      font-weight: bold;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: 2rem;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 0 10px 0;
+      z-index: 10;
+    }
+    .sidebar .logo {
+      font-size: 1.5rem;
+      color: #111;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 2px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 0;
+      box-shadow: 0 2px 8px #ececec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar nav a {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px 24px;
+      border-radius: 5px 0 0 5px;
+      transition: background 0.3s;
+      font-size: 1rem;
+    }
+    .sidebar nav a i { margin-right: 10px; }
+    .sidebar nav a span { display: inline; }
+    .sidebar nav a.active, .sidebar nav a:hover {
+      background: #1abc9c;
+      color: #fff;
+    }
+    .sidebar-footer a, .sidebar-footer button {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px 24px;
+      border-radius: 5px;
+      background: #16a085;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .sidebar-footer a i, .sidebar-footer button i { margin-right: 10px; }
+    .sidebar-footer button:hover { background: #e74c3c; }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+      width: calc(100vw - var(--sidebar-width));
+      overflow-x: auto;
+      color: #111;
+    }
+    .container {
+      padding: 24px;
+      max-width: 800px;
+      margin: auto;
+      box-sizing: border-box;
+      color: #111;
+    }
+    .glass-card {
+      background: rgba(255,255,255,0.18);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px #ececec;
+      border: 1.5px solid #ececec;
+      margin-bottom: 20px;
+      padding: 18px 12px 12px 12px;
+      color: #111;
+    }
+    .form-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #16a085;
+    }
+    label { font-weight: 600; margin-top: 8px; display: block; }
+    select, input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1.5px solid #ececec;
+      font-size: 1rem;
+      color: #111;
+      background: #f8f6f0;
+    }
+    button[type="submit"] {
+      background: #1abc9c;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 2px 8px #ececec;
+      margin-top: 10px;
+    }
+    button[type="submit"]:hover {
+      background: #16a085;
+      color: #fff;
+    }
+    .success-msg { color: #388e3c; font-weight: bold; margin-bottom: 8px; }
+    .error-msg { color: #c0392b; font-weight: bold; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="osm-bg">OSM</div>
+  <aside class="sidebar">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="vertical-align:middle;margin-right:8px;" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="7" width="26" height="18" rx="5" fill="#fffbe6" stroke="#1abc9c" stroke-width="2"/>
+        <rect x="7" y="11" width="18" height="10" rx="3" fill="#43c6ac" stroke="#16a085" stroke-width="1.5"/>
+        <circle cx="12" cy="16" r="2" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+        <circle cx="16" cy="16" r="2" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+        <circle cx="20" cy="16" r="2" fill="#43c6ac" stroke="#222" stroke-width="1"/>
+        <rect x="13" y="20" width="6" height="2" rx="1" fill="#222"/>
+        <rect x="27" y="10" width="2" height="8" rx="1" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+        <circle cx="28" cy="10" r="1" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+      </svg>
+      OSM
+    </div>
+    <nav>
+      <a href="dashboard-pointB.html"><i class="fa-solid fa-chess-slot"></i> <span>Dashboard</span></a>
+      <a href="technician-pointB.html" class="active"><i class="fa-solid fa-users-gear"></i> <span>Technician</span></a>
+      <a href="slot-machines-pointB.html"><i class="fa-solid fa-desktop"></i> <span>Monitoring</span></a>
+      <a href="error-report.html"><i class="fa-solid fa-triangle-exclamation"></i> <span>Error Report</span></a>
+      <a href="win-loss.html"><i class="fa-solid fa-coins"></i> <span>Win/Loss</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#"><i class="fa-solid fa-user"></i> <span>Profile</span></a>
+      <a href="#"><i class="fa-solid fa-gear"></i> <span>Settings</span></a>
+      <button onclick="alert('Logging out...')"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></button>
+    </div>
+  </aside>
+  <div class="main-content">
+    <div class="container">
+      <div class="glass-card">
+        <div class="form-title">On-Duty Technician Setup (Manila)</div>
+        <form id="technicianForm">
+          <label for="shiftTime">Shift Time</label>
+          <select id="shiftTime" required>
+            <option value="">Select shift time</option>
+            <option value="0600H - 1500H">0600H - 1500H</option>
+            <option value="1400H - 2300H">1400H - 2300H</option>
+            <option value="2200H - 0700H">2200H - 0700H</option>
+          </select>
+          <label for="shiftDate">Shift Date</label>
+          <input type="date" id="shiftDate" required>
+          <label for="supervisor">Supervisor</label>
+          <select id="supervisor" required>
+            <option value="">Select supervisor</option>
+            <option value="None">None</option>
+            <option value="Herby P. Perez">Herby P. Perez</option>
+          </select>
+          <label for="osmEng">OSM Engineer</label>
+          <select id="osmEng" required>
+            <option value="">Select OSM Engineer</option>
+            <option value="None">None</option>
+            <option value="Rhonnel Jhon B Deza">Rhonnel Jhon B Deza</option>
+          </select>
+          <label for="teamLeaders">Team Leader(s)</label>
+          <select id="teamLeaders" class="choices-multiple" multiple required>
+            <option value="Cristie De Jesus">Cristie De Jesus</option>
+            <option value="Dolan Caranog">Dolan Caranog</option>
+            <option value="Earl Hubahib">Earl Hubahib</option>
+            <option value="Francis Aduna">Francis Aduna</option>
+            <option value="None">None</option>
+          </select>
+          <label for="technicians">Technician(s)</label>
+          <select id="technicians" class="choices-multiple" multiple required>
+            <option value="Anthony Lastra">Anthony Lastra</option>
+            <option value="Cliff Richard Delos Arcos">Cliff Richard Delos Arcos</option>
+            <option value="Edward Panaligan">Edward Panaligan</option>
+            <option value="Eduardo Ilaga">Eduardo Ilaga</option>
+            <option value="Erdie Boy Leonor">Erdie Boy Leonor</option>
+            <option value="Gilbert Culabat">Gilbert Culabat</option>
+            <option value="Jason Sebarre">Jason Sebarre</option>
+            <option value="Julius Napoleon Rempillo">Julius Napoleon Rempillo</option>
+            <option value="Raymund Colar">Raymund Colar</option>
+            <option value="Roel Natividad">Roel Natividad</option>
+          </select>
+          <button type="submit">Save</button>
+          <div id="formMsg"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script>
+    // Choices.js for multi-select
+    document.addEventListener('DOMContentLoaded', function () {
+      const elements = document.querySelectorAll('.choices-multiple');
+      elements.forEach(function(el) {
+        new Choices(el, {
+          removeItemButton: true,
+          searchResultLimit: 10,
+          placeholder: true,
+          placeholderValue: 'Select...',
+          noResultsText: 'No results found',
+          noChoicesText: 'No choices to choose from',
+          itemSelectText: 'Click to select',
+          shouldSort: false
+        });
+      });
+    });
+
+    // Save form data to localStorage
+    document.getElementById('technicianForm').onsubmit = function(e) {
+      e.preventDefault();
+      const shiftTime = document.getElementById('shiftTime').value;
+      const shiftDate = document.getElementById('shiftDate').value;
+      const supervisor = document.getElementById('supervisor').value;
+      const osmEng = document.getElementById('osmEng').value;
+      const teamLeaders = Array.from(document.getElementById('teamLeaders').selectedOptions).map(opt => opt.value);
+      const technicians = Array.from(document.getElementById('technicians').selectedOptions).map(opt => opt.value);
+
+      if (!shiftTime || !shiftDate || !supervisor || !osmEng || teamLeaders.length === 0 || technicians.length === 0) {
+        document.getElementById('formMsg').innerHTML = '<div class="error-msg">Please fill in all fields.</div>';
+        return;
+      }
+
+      const data = { shiftTime, shiftDate, supervisor, osmEng, teamLeaders, technicians };
+      localStorage.setItem('onDutyTechnician_B', JSON.stringify(data));
+      document.getElementById('formMsg').innerHTML = '<div class="success-msg">Saved! Go back to Dashboard to see changes.</div>';
+      setTimeout(() => { window.location.href = 'dashboard-pointB.html'; }, 1000);
+    };
+
+    // Load existing data if present
+    window.onload = function() {
+      const data = JSON.parse(localStorage.getItem('onDutyTechnician_B'));
+      if (data) {
+        document.getElementById('shiftTime').value = data.shiftTime || '';
+        document.getElementById('shiftDate').value = data.shiftDate || '';
+        document.getElementById('supervisor').value = data.supervisor || '';
+        document.getElementById('osmEng').value = data.osmEng || '';
+        if (Array.isArray(data.teamLeaders)) {
+          const teamLeadersSelect = document.getElementById('teamLeaders');
+          Array.from(teamLeadersSelect.options).forEach(opt => {
+            opt.selected = data.teamLeaders.includes(opt.value);
+          });
+        }
+        if (Array.isArray(data.technicians)) {
+          const techniciansSelect = document.getElementById('technicians');
+          Array.from(techniciansSelect.options).forEach(opt => {
+            opt.selected = data.technicians.includes(opt.value);
+          });
+        }
+      }
+    };
+  </script>
+</body>
+</html>

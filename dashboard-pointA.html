@@ -132,15 +132,27 @@
             box-sizing: border-box;
             color: #111;
         }
-        .dashboard-widgets {
+        .dashboard-widgets.row {
             display: flex;
             gap: 18px;
             margin-bottom: 24px;
             flex-wrap: wrap;
         }
+        .widget-actions-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .widget-action.danger {
+            background: #e74c3c;
+        }
+        .widget-action.danger:hover {
+            background: #c0392b;
+        }
         .widget-card {
-            flex: 1 1 200px;
-            min-width: 200px;
+            min-width: 240px;
+            max-width: 350px;
+            flex: 1 1 260px;
             background: var(--glass-bg);
             border-radius: 12px;
             box-shadow: 0 4px 18px #ececec;
@@ -152,6 +164,12 @@
             position: relative;
             margin-bottom: 0;
             color: #111;
+        }
+        /* Make the Technicians On Duty widget wider */
+        .widget-card.technician-duty {
+            min-width: 320px;
+            max-width: 480px;
+            flex: 2 1 340px;
         }
         .widget-title {
             font-size: 1.05rem;
@@ -265,7 +283,8 @@
             text-shadow: 0 2px 8px #fff;
         }
         @media (max-width: 900px) {
-            .dashboard-widgets { flex-direction: column; gap: 10px; }
+            .dashboard-widgets.row { flex-direction: column; }
+            .widget-card { max-width: 100%; }
             .main-content, .container { padding-left: 2vw; padding-right: 2vw; }
             .sidebar { width: 48px; padding-top: 10px; }
             .sidebar .logo { font-size: 1rem; margin-bottom: 10px; }
@@ -477,7 +496,6 @@
             <a href="technician.html"><i class="fa-solid fa-users-gear"></i> <span>Technician</span></a>
             <a href="slot-machines.html"><i class="fa-solid fa-desktop"></i> <span>Monitoring</span></a>
             <a href="error-report.html"><i class="fa-solid fa-triangle-exclamation"></i> <span>Error Report</span></a>
-            <a href="win-loss.html"><i class="fa-solid fa-coins"></i> <span>Win/Loss</span></a>
         </nav>
         <div class="sidebar-footer">
             <a href="#"><i class="fa-solid fa-user"></i> <span>Profile</span></a>
@@ -490,76 +508,90 @@
             <span id="liveClock" class="live-clock"></span>
         </div>
         <div class="container">
-            <div class="dashboard-widgets">
-                <!-- Slot Machines Widget -->
+            <!-- First Row: Slot Machines -->
+            <div class="dashboard-widgets row">
+                <!-- Slot Machines Operational -->
                 <div class="widget-card">
-                    <div class="widget-title">
-                        <span style="width:1.2em;display:inline-block;vertical-align:middle;">
-                            <svg viewBox="0 0 32 32" width="1.1em" height="1.1em" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="5" y="8" width="22" height="16" rx="3" fill="#1abc9c" stroke="#222" stroke-width="2"/>
-                                <rect x="8" y="11" width="16" height="10" rx="2" fill="#fffbe6" stroke="#222" stroke-width="1"/>
-                                <circle cx="12" cy="16" r="2" fill="#e74c3c" stroke="#222" stroke-width="1"/>
-                                <circle cx="16" cy="16" r="2" fill="#f8ffae" stroke="#222" stroke-width="1"/>
-                                <circle cx="20" cy="16" r="2" fill="#43c6ac" stroke="#222" stroke-width="1"/>
-                                <rect x="13" y="21" width="6" height="2" rx="1" fill="#222"/>
-                                <rect x="27" y="10" width="2" height="8" rx="1" fill="#f8ffae" stroke="#222" stroke-width="1"/>
-                                <circle cx="28" cy="10" r="1" fill="#e74c3c" stroke="#222" stroke-width="1"/>
-                            </svg>
-                        </span>
-                        Slot Machines
-                    </div>
-                    <div id="latestMachineName" class="slot-machine-latest"></div>
-                    <button class="widget-action" onclick="openModal('addMachineModal')"><i class="fa-solid fa-plus"></i> Add Machine</button>
+                    <div class="widget-title"><i class="fa-solid fa-check-circle"></i> Slot Machines Operational</div>
+                    <div class="widget-value" id="machinesOperationalCount">0</div>
+                    <button class="widget-action" onclick="openModal('addOperationalModal')"><i class="fa-solid fa-plus"></i> Add</button>
                 </div>
-                <!-- Jackpot Monitoring Widget -->
+                <!-- Slot Machines Non Operational -->
                 <div class="widget-card">
-                    <div class="widget-title"><i class="fa-solid fa-star"></i> JACKPOT MONITORING</div>
+                    <div class="widget-title"><i class="fa-solid fa-times-circle"></i> Slot Machines Non Operational</div>
+                    <div class="widget-value" id="machinesNonOperationalCount">0</div>
+                    <button class="widget-action" onclick="openModal('addNonOperationalModal')"><i class="fa-solid fa-plus"></i> Add</button>
+                </div>
+            </div>
+            <!-- Second Row: Jackpot and Win/Loss -->
+            <div class="dashboard-widgets row">
+                <!-- Jackpot Monitoring -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-star"></i> Jackpot Monitoring</div>
                     <div class="date-select">
                         <label for="jackpotDate">Date:</label>
-                        <input type="date" id="jackpotDate" value="">
+                        <input type="date" id="jackpotDate">
+                        <select id="jackpotView" onchange="showJackpot(this.value)">
+                            <option value="daily">Daily</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
                     </div>
                     <div class="widget-value" id="jackpotCount">0</div>
                     <button class="widget-action" onclick="openModal('addJackpotModal')"><i class="fa-solid fa-plus"></i> Add Jackpot</button>
                 </div>
-                <!-- Total Error Encountered Widget -->
+                <!-- Daily Win/Loss -->
                 <div class="widget-card">
-                    <div class="widget-title"><i class="fa-solid fa-bug"></i> TOTAL ERROR ENCOUNTERED</div>
-                    <div class="date-select" style="margin-bottom:8px;">
-                        <label for="errorTechFilter" style="color:#111;font-weight:600;">Technician:</label>
-                        <select id="errorTechFilter" style="padding:4px 8px;border-radius:6px;border:1.5px solid #ececec;font-size:1rem;background:#f8f6f0;">
-                            <option value="">All</option>
-                        </select>
-                    </div>
-                    <div class="widget-value" id="errorCount">0</div>
-                    <div id="dashboardErrorList"></div>
-                    <button class="widget-action" onclick="openModal('addErrorModal')"><i class="fa-solid fa-plus"></i> Add Error</button>
-                </div>
-                <!-- Daily Win/Loss Widget -->
-                <div class="widget-card">
-                    <div class="widget-title"><i class="fa-solid fa-chart-line"></i> Daily WIN/LOSS</div>
+                    <div class="widget-title"><i class="fa-solid fa-chart-line"></i> Daily Win/Loss</div>
                     <div class="date-select">
                         <label for="winlossDate">Date:</label>
-                        <input type="date" id="winlossDate" value="">
+                        <input type="date" id="winlossDate">
+                        <select id="winlossView" onchange="showWinLoss(this.value)">
+                            <option value="daily">Daily</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
                     </div>
                     <div class="widget-value" id="winLossValue">₱0</div>
                     <button class="widget-action" onclick="openModal('addWinLossModal')"><i class="fa-solid fa-plus"></i> Add Win/Loss</button>
                 </div>
-                <!-- Technicians On Duty Widget -->
-                <div class="widget-card">
+            </div>
+            <!-- Third Row: Technicians, Errors, Hourly Monitoring -->
+            <div class="dashboard-widgets row">
+                <!-- Technicians On Duty -->
+                <div class="widget-card technician-duty">
                     <div class="widget-title"><i class="fa-solid fa-users-gear"></i> Technicians On Duty</div>
                     <div class="on-duty-modern" id="onDutyTechs"></div>
+                    <div class="widget-actions-row">
+                        <button class="widget-action danger" onclick="resetOnDuty()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                        <button class="widget-action" onclick="openModal('addOnDutyModal')"><i class="fa-solid fa-plus"></i> Set On Duty</button>
+                    </div>
                 </div>
-                <!-- Hourly Machine Monitoring Widget -->
+                <!-- Total Error Encountered -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-triangle-exclamation"></i> Total Error Encountered</div>
+                    <div class="widget-value" id="errorCount">0</div>
+                    <div id="dashboardErrorList"></div>
+                    <div class="widget-actions-row">
+                        <button class="widget-action danger" onclick="resetErrors()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                        <button class="widget-action" onclick="openModal('addErrorModal')"><i class="fa-solid fa-plus"></i> Add Error</button>
+                    </div>
+                </div>
+                <!-- Hourly Machine Monitoring -->
                 <div class="widget-card">
                     <div class="widget-title"><i class="fa-solid fa-clock"></i> Hourly Machine Monitoring</div>
                     <div id="dashboardHourlyMonitoring"></div>
-                    <button class="widget-action" onclick="openHourlyModal()" style="margin: 10px auto 0 auto; display: block;">
-                        View All Entries
-                    </button>
+                    <button class="widget-action" onclick="openHourlyModal()"><i class="fa-solid fa-list"></i> View All</button>
                 </div>
             </div>
+            <!-- Third Row: Graph -->
+            <div class="glass-card" style="margin-top:24px;">
+                <div class="widget-title"><i class="fa-solid fa-chart-bar"></i> Monthly Win/Loss Graph</div>
+                <canvas id="winLossChart" height="80"></canvas>
+            </div>
+            <!-- Welcome/Quote -->
             <header class="header-section">
-                <h1>Slot Machines Monitoring - Point A</h1>
+                <h1>Slot Machine Rizal</h1>
                 <p>Track your machines' status and monitor the jackpots, errors, and daily win/loss</p>
             </header>
             <div class="glass-card" style="margin-bottom:60px; text-align:center;">
@@ -679,6 +711,32 @@
         </form>
       </div>
     </div>
+    <!-- Operational Modal -->
+    <div id="addOperationalModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('addOperationalModal')">&times;</span>
+        <h2>Set Operational Machines</h2>
+        <form id="addOperationalForm">
+          <label>Number of Operational Machines</label>
+          <input type="number" id="operationalInput" min="0" required>
+          <button type="submit">Save</button>
+          <div id="addOperationalMsg"></div>
+        </form>
+      </div>
+    </div>
+    <!-- Non-Operational Modal -->
+    <div id="addNonOperationalModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('addNonOperationalModal')">&times;</span>
+        <h2>Set Non-Operational Machines</h2>
+        <form id="addNonOperationalForm">
+          <label>Number of Non-Operational Machines</label>
+          <input type="number" id="nonOperationalInput" min="0" required>
+          <button type="submit">Save</button>
+          <div id="addNonOperationalMsg"></div>
+        </form>
+      </div>
+    </div>
     <!-- Hourly Monitoring Modal -->
     <div id="hourlyMonitoringModal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
@@ -709,19 +767,47 @@
             if (machines.length === 0) {
                 latestDiv.innerHTML = "<div style='color:#888;font-size:1.1rem;'>No machines added yet.</div>";
             } else {
-                const last = machines[machines.length - 1];
-                latestDiv.innerHTML = `<div>${last.name}</div>`;
+                // Show the latest machine added (last in the array)
+                const latest = machines[machines.length - 1];
+                latestDiv.innerHTML = `<span style="font-size:2.2rem;font-weight:900;color:#1abc9c;">${latest.name}</span>`;
             }
+
+            // Count operational/non-operational (for demo, all are operational)
+            document.getElementById('machinesOperationalCount').textContent = machines.length;
+            document.getElementById('machinesNonOperationalCount').textContent = 0; // You can update this logic if you have status
         }
 
-        // JACKPOT
+        let jackpotView = 'daily';
+        let winLossView = 'daily';
+
+        function showJackpot(view) {
+            jackpotView = view;
+            updateJackpot();
+        }
+        function showWinLoss(view) {
+            winLossView = view;
+            updateWinLoss();
+        }
+
         function updateJackpot() {
             const jackpots = JSON.parse(localStorage.getItem('jackpots_A')) || [];
             const selectedDate = document.getElementById('jackpotDate').value;
             let total = 0;
-            jackpots.forEach(j => {
-                if (j.date === selectedDate) total += Number(j.amount);
-            });
+            if (jackpotView === 'daily') {
+                jackpots.forEach(j => {
+                    if (j.date === selectedDate) total += Number(j.amount);
+                });
+            } else if (jackpotView === 'monthly') {
+                const month = selectedDate.slice(0, 7); // YYYY-MM
+                jackpots.forEach(j => {
+                    if (j.date && j.date.startsWith(month)) total += Number(j.amount);
+                });
+            } else if (jackpotView === 'yearly') {
+                const year = selectedDate.slice(0, 4); // YYYY
+                jackpots.forEach(j => {
+                    if (j.date && j.date.startsWith(year)) total += Number(j.amount);
+                });
+            }
             document.getElementById('jackpotCount').textContent = total.toLocaleString();
         }
 
@@ -738,16 +824,16 @@
         // ERROR
         function updateError() {
             const errors = JSON.parse(localStorage.getItem('errors_A')) || [];
-            const selectedTech = document.getElementById('errorTechFilter') ? document.getElementById('errorTechFilter').value : "";
-            const filtered = selectedTech ? errors.filter(e => e.technician === selectedTech) : errors;
-            document.getElementById('errorCount').textContent = filtered.length;
+            // const selectedTech = document.getElementById('errorTechFilter') ? document.getElementById('errorTechFilter').value : "";
+            // const filtered = selectedTech ? errors.filter(e => e.technician === selectedTech) : errors;
+            document.getElementById('errorCount').textContent = errors.length;
 
             const errorListDiv = document.getElementById('dashboardErrorList');
             if (errorListDiv) {
-                if (filtered.length === 0) {
+                if (errors.length === 0) {
                     errorListDiv.innerHTML = "<div style='color:#888'>No errors reported.</div>";
                 } else {
-                    const recent = filtered.slice(-3).reverse();
+                    const recent = errors.slice(-3).reverse();
                     errorListDiv.innerHTML = recent.map(e => `
                         <div class="hourly-entry" style="font-size:0.98em;padding:6px 0;">
                             <strong>${e.date} ${e.time}</strong>
@@ -756,7 +842,7 @@
                     `).join('');
                 }
             }
-            populateErrorTechFilter();
+            // populateErrorTechFilter();
         }
 
         // WIN/LOSS
@@ -764,10 +850,23 @@
             const winLosses = JSON.parse(localStorage.getItem('winLosses_A')) || [];
             const selectedDate = document.getElementById('winlossDate').value;
             let total = 0;
-            winLosses.forEach(wl => {
-                if (wl.date === selectedDate) total += Number(wl.amount);
-            });
+            if (winLossView === 'daily') {
+                winLosses.forEach(wl => {
+                    if (wl.date === selectedDate) total += Number(wl.amount);
+                });
+            } else if (winLossView === 'monthly') {
+                const month = selectedDate.slice(0, 7);
+                winLosses.forEach(wl => {
+                    if (wl.date && wl.date.startsWith(month)) total += Number(wl.amount);
+                });
+            } else if (winLossView === 'yearly') {
+                const year = selectedDate.slice(0, 4);
+                winLosses.forEach(wl => {
+                    if (wl.date && wl.date.startsWith(year)) total += Number(wl.amount);
+                });
+            }
             document.getElementById('winLossValue').textContent = "₱" + total.toLocaleString();
+            renderWinLossChart();
         }
 
         // Set today's date as default for jackpot and win/loss
@@ -802,6 +901,78 @@
             el.innerHTML = html || "<span style='color:#888;'>No data set.</span>";
         }
 
+        // Hourly Monitoring
+        function updateDashboardHourlyMonitoring() {
+            const list = document.getElementById('dashboardHourlyMonitoring');
+            if (!list) return;
+            const data = JSON.parse(localStorage.getItem('hourlyMonitoring_A')) || [];
+            if (data.length === 0) {
+                list.innerHTML = "<div style='color:#888'>No hourly monitoring data found.</div>";
+                return;
+            }
+            const latestEntries = data.slice(-3).reverse();
+            list.innerHTML = latestEntries.map(entry => `
+                <div class="hourly-entry" style="font-size:0.98em;padding:6px 0;">
+                    <strong>${entry.time}</strong>
+                    <span>Machine: ${entry.machine}</span>
+                    <span>Technician: ${entry.technician}</span>
+                </div>
+            `).join('');
+        }
+
+        // Reset functions
+        function resetOnDuty() {
+            if (confirm("Are you sure you want to reset technicians on duty?")) {
+                localStorage.removeItem('onDutyTechnician_A');
+                displayOnDutyTechs();
+            }
+        }
+        function resetErrors() {
+            if (confirm("Are you sure you want to reset all errors?")) {
+                localStorage.removeItem('errors_A');
+                updateError();
+            }
+        }
+
+        // Win/Loss Chart
+        function renderWinLossChart() {
+            const winLosses = JSON.parse(localStorage.getItem('winLosses_A')) || [];
+            // Get selected month from winlossDate input
+            const selectedDate = document.getElementById('winlossDate').value;
+            const selectedMonth = selectedDate ? selectedDate.slice(0, 7) : new Date().toISOString().slice(0, 7);
+
+            // Aggregate by day for the selected month
+            const daily = {};
+            winLosses.forEach(wl => {
+                if (wl.date && wl.date.startsWith(selectedMonth)) {
+                    daily[wl.date] = (daily[wl.date] || 0) + Number(wl.amount);
+                }
+            });
+
+            // Prepare labels (days of the month with data)
+            const labels = Object.keys(daily).sort();
+            const data = labels.map(day => daily[day]);
+
+            const ctx = document.getElementById('winLossChart').getContext('2d');
+            if (window.winLossChartInstance) window.winLossChartInstance.destroy();
+            window.winLossChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Daily Win/Loss',
+                        data,
+                        backgroundColor: '#1abc9c'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
         // Initial update
         setTodayDate();
         updateMachinesList();
@@ -809,9 +980,13 @@
         updateError();
         updateWinLoss();
         displayOnDutyTechs();
+        updateDashboardHourlyMonitoring();
 
         // Date change for jackpot and win/loss
-        document.getElementById('winlossDate').addEventListener('change', updateWinLoss);
+        document.getElementById('winlossDate').addEventListener('change', function() {
+            updateWinLoss();
+            renderWinLossChart();
+        });
         document.getElementById('jackpotDate').addEventListener('change', updateJackpot);
 
         // Modal helpers
@@ -825,6 +1000,8 @@
             if(id === 'addErrorModal') document.getElementById('addErrorMsg').innerHTML = '';
             if(id === 'addWinLossModal') document.getElementById('addWinLossMsg').innerHTML = '';
             if(id === 'addOnDutyModal') document.getElementById('addOnDutyMsg').innerHTML = '';
+            if(id === 'addOperationalModal') document.getElementById('addOperationalMsg').innerHTML = '';
+            if(id === 'addNonOperationalModal') document.getElementById('addNonOperationalMsg').innerHTML = '';
         }
 
         // Add Machine
@@ -923,6 +1100,28 @@
             setTimeout(() => { closeModal('addOnDutyModal'); }, 600);
         };
 
+        // Operational
+        document.getElementById('addOperationalForm').onsubmit = function(e) {
+            e.preventDefault();
+            const val = document.getElementById('operationalInput').value;
+            localStorage.setItem('machinesOperationalCount', val);
+            document.getElementById('addOperationalMsg').innerHTML = '<div class="success-msg">Saved!</div>';
+            document.getElementById('machinesOperationalCount').textContent = val;
+            setTimeout(() => { closeModal('addOperationalModal'); }, 600);
+        };
+        // Non-Operational
+        document.getElementById('addNonOperationalForm').onsubmit = function(e) {
+            e.preventDefault();
+            const val = document.getElementById('nonOperationalInput').value;
+            localStorage.setItem('machinesNonOperationalCount', val);
+            document.getElementById('addNonOperationalMsg').innerHTML = '<div class="success-msg">Saved!</div>';
+            document.getElementById('machinesNonOperationalCount').textContent = val;
+            setTimeout(() => { closeModal('addNonOperationalModal'); }, 600);
+        };
+        // On load
+        document.getElementById('machinesOperationalCount').textContent = localStorage.getItem('machinesOperationalCount') || 0;
+        document.getElementById('machinesNonOperationalCount').textContent = localStorage.getItem('machinesNonOperationalCount') || 0;
+
         // Modal open/close functions
         function openHourlyModal() {
             document.getElementById('hourlyMonitoringModal').style.display = 'flex';
@@ -949,36 +1148,18 @@
             `).join('');
         }
 
-        function updateDashboardHourlyMonitoring() {
-            const list = document.getElementById('dashboardHourlyMonitoring');
-            if (!list) return;
-            const data = JSON.parse(localStorage.getItem('hourlyMonitoring_A')) || [];
-            if (data.length === 0) {
-                list.innerHTML = "<div style='color:#888'>No monitoring data found.</div>";
-                return;
-            }
-            // Show the last 5 entries, most recent first
-            const recent = data.slice(-5).reverse();
-            list.innerHTML = recent.map(entry => `
-                <div class="hourly-entry" style="font-size:0.98em;padding:6px 0;">
-                    <strong>${entry.time}</strong>
-                    <span>Label: ${entry.machine}</span>
-                    <span>Technician: ${entry.technician}</span>
-                </div>
-            `).join('');
+        // Refresh dashboard data
+        function refreshDashboardData() {
+            updateMachinesList();
+            updateJackpot();
+            updateError();
+            updateWinLoss();
+            displayOnDutyTechs();
+            updateDashboardHourlyMonitoring();
         }
 
-        updateDashboardHourlyMonitoring();
+        // Refresh every minute
+        setInterval(refreshDashboardData, 60000);
     </script>
-<script>
-// Only run if user is manager
-if (localStorage.getItem('userRole') === 'manager') {
-  // Hide Point C section if it exists
-  const pointCSection = document.getElementById('point-c-section');
-  if (pointCSection) {
-    pointCSection.style.display = 'none';
-  }
-}
-</script>
 </body>
 </html>

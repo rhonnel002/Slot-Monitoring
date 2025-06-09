@@ -224,14 +224,6 @@
             flex: 1;
             text-align: left;
         }
-        .machines-col-cctv,
-        .machines-col-touch,
-        .machines-col-audio,
-        .machines-col-display,
-        .machines-col-ideck {
-            flex: 0 0 60px;
-            text-align: center;
-        }
         .machines-col-check {
             flex: 0 0 36px;
             text-align: center;
@@ -409,14 +401,6 @@
             border-radius: 8px;
             box-shadow: 0 1px 4px #ffe08255;
         }
-        .machines-col-cctv,
-        .machines-col-touch,
-        .machines-col-audio,
-        .machines-col-display,
-        .machines-col-ideck {
-            flex: 0 0 60px;
-            text-align: center;
-        }
         .machines-col-check {
             flex: 0 0 36px;
             text-align: center;
@@ -548,11 +532,6 @@
                             <div class="machines-col machines-col-thumb"></div>
                             <div class="machines-col machines-col-check" style="justify-content:center;text-align:center;">Check</div>
                             <div class="machines-col machines-col-name" style="justify-content:flex-start;text-align:left;">Machine</div>
-                            <div class="machines-col machines-col-cctv" style="justify-content:center;text-align:center;">CCTV</div>
-                            <div class="machines-col machines-col-touch" style="justify-content:center;text-align:center;">Touchscreen</div>
-                            <div class="machines-col machines-col-audio" style="justify-content:center;text-align:center;">Audio</div>
-                            <div class="machines-col machines-col-display" style="justify-content:center;text-align:center;">Display</div>
-                            <div class="machines-col machines-col-ideck" style="justify-content:center;text-align:center;">Ideck</div>
                             <div class="machines-col machines-col-remarks" style="justify-content:flex-start;text-align:left;">Remarks</div>
                         </div>
                         <div id="machinesRows"></div>
@@ -658,11 +637,6 @@
             machineList.forEach(machine => {
                 const checked = saved[machine]?.checked ? "checked" : "";
                 const remarks = saved[machine]?.remarks || "";
-                const cctv = saved[machine]?.cctv ? "checked" : "";
-                const touch = saved[machine]?.touch ? "checked" : "";
-                const audio = saved[machine]?.audio ? "checked" : "";
-                const display = saved[machine]?.display ? "checked" : "";
-                const ideck = saved[machine]?.ideck ? "checked" : "";
 
                 let imgSrc, imgAlt, caption;
                 if (carnivalMachines.includes(machine)) {
@@ -692,21 +666,6 @@
                             <input type="checkbox" name="machineCheck" value="${machine}" ${checked} onchange="handleMachineCheck(this)">
                         </div>
                         <div class="machines-col machines-col-name">${machine}</div>
-                        <div class="machines-col machines-col-cctv">
-                            <input type="checkbox" name="cctv-${machine}" ${cctv}>
-                        </div>
-                        <div class="machines-col machines-col-touch">
-                            <input type="checkbox" name="touch-${machine}" ${touch}>
-                        </div>
-                        <div class="machines-col machines-col-audio">
-                            <input type="checkbox" name="audio-${machine}" ${audio}>
-                        </div>
-                        <div class="machines-col machines-col-display">
-                            <input type="checkbox" name="display-${machine}" ${display}>
-                        </div>
-                        <div class="machines-col machines-col-ideck">
-                            <input type="checkbox" name="ideck-${machine}" ${ideck}>
-                        </div>
                         <div class="machines-col machines-col-remarks">
                             <input type="text" name="remarks-${machine}" value="${remarks}" placeholder="Remarks...">
                         </div>

@@ -7,25 +7,26 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        :root {
+            --sidebar-width: 220px;
+            --sidebar-bg: #222;
+            --accent: #1abc9c;
+            --accent-dark: #16a085;
+            --glass-bg: rgba(255,255,255,0.92);
+            --glass-border: #ececec;
+            --widget-shadow: 0 8px 32px rgba(26,188,156,0.10), 0 1.5px 8px #ececec;
+            --gold: #ffb300;
+            --yellow-bg: #fffbe6;
+        }
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white;
-        }
-        .osm-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            opacity: 0.8;
+            background: linear-gradient(120deg, #f8f6f0 60%, #e0f7fa 100%);
+            color: #222;
         }
         .sidebar {
-            width: 220px;
-            background: #222;
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
             height: 100vh;
             position: fixed;
             top: 0; left: 0;
@@ -64,8 +65,15 @@
         .sidebar nav a i { margin-right: 10px; }
         .sidebar nav a span { display: inline; }
         .sidebar nav a.active, .sidebar nav a:hover {
-            background: #1abc9c;
+            background: var(--accent);
             color: #fff;
+        }
+        .sidebar nav a.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+            background: #444 !important;
+            color: #bbb !important;
+            cursor: not-allowed;
         }
         .sidebar-footer a, .sidebar-footer button {
             color: #fff;
@@ -75,7 +83,7 @@
             margin-bottom: 10px;
             padding: 10px 24px;
             border-radius: 5px;
-            background: #16a085;
+            background: var(--accent-dark);
             border: none;
             cursor: pointer;
             font-size: 1rem;
@@ -83,78 +91,270 @@
         .sidebar-footer a i, .sidebar-footer button i { margin-right: 10px; }
         .sidebar-footer button:hover { background: #e74c3c; }
         .main-content {
-            margin-left: 270px;
-            padding: 20px;
+            margin-left: var(--sidebar-width);
+            padding: 24px 8px 24px 8px;
+            min-height: 100vh;
+            background: transparent;
         }
         .top-bar {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 20px;
+            align-items: center;
+            margin-bottom: 18px;
         }
         .live-clock {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
+            color: #16a085;
+            background: #f5f5f5;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            box-shadow: 0 2px 8px #ececec;
         }
         .container {
+            max-width: 1200px;
+            margin: auto;
             display: flex;
+            flex-direction: row;
+            gap: 18px;
             flex-wrap: wrap;
-            gap: 20px;
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            flex: 1;
-            min-width: 300px;
+            background: var(--glass-bg);
+            padding: 22px 18px 18px 18px;
+            border-radius: 18px;
+            margin-bottom: 0;
+            box-shadow: var(--widget-shadow);
+            border: 1.5px solid var(--glass-border);
+            transition: box-shadow 0.2s, transform 0.2s;
+            flex: 1 1 350px;
+            min-width: 280px;
+        }
+        .glass-card:hover {
+            box-shadow: 0 16px 48px rgba(26,188,156,0.18), 0 2px 12px #b2dfdb;
+            transform: translateY(-2px) scale(1.025);
         }
         .form-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.15rem;
+            margin-bottom: 16px;
+            font-weight: 900;
+            color: var(--accent-dark);
+            letter-spacing: 1px;
+            border-left: 5px solid var(--accent);
+            padding-left: 12px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+            font-size: 0.98rem;
         }
-        input, textarea, button {
+        input[type="time"], select, textarea {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            border: 1.5px solid #ececec;
             border-radius: 8px;
-            border: none;
-            font-size: 1rem;
+            font-size: 0.97rem;
+            color: #111;
+            background: #f8f6f0;
+            box-sizing: border-box;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        select:focus, input:focus, textarea:focus {
+            border: 1.5px solid var(--accent);
+            outline: none;
+            box-shadow: 0 2px 8px #e0f7fa;
         }
         textarea {
             resize: vertical;
-            height: 150px;
+            min-height: 60px;
+            max-height: 160px;
         }
-        button {
-            background-color: rgba(255, 255, 255, 0.3);
+        button[type="submit"] {
+            padding: 10px 18px;
+            background: linear-gradient(90deg, var(--accent) 60%, var(--accent-dark) 100%);
             color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: 700;
+            font-size: 1.01rem;
+            box-shadow: 0 2px 8px #ececec;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            margin-top: 6px;
         }
-        button:hover {
-            background-color: rgba(255, 255, 255, 0.5);
+        button[type="submit"]:hover {
+            background: linear-gradient(90deg, var(--accent-dark) 60%, var(--accent) 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px #b2dfdb;
+        }
+        .success-msg, .error-msg {
+            font-weight: 600;
+            margin-top: 8px;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 0.97em;
+        }
+        .success-msg {
+            color: #388e3c;
+            background: #e0f7fa;
+        }
+        .error-msg {
+            color: #e74c3c;
+            background: #fffbe6;
+        }
+        #machineErrorList {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .machine-error-card {
+            background: linear-gradient(120deg, #fffbe6 60%, #e0f7fa 100%);
+            border-radius: 14px;
+            padding: 12px 10px 10px 10px;
+            box-shadow: 0 2px 8px #ececec;
+            margin-bottom: 0;
+            min-height: 80px;
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative;
+        }
+        .machine-error-card:hover {
+            box-shadow: 0 8px 32px #b2dfdb;
+            transform: translateY(-2px) scale(1.02);
+        }
+        .machine-error-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+        .machine-error-header .machine-id {
+            font-weight: 700;
+            color: var(--accent-dark);
+            font-size: 1.02em;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .machine-error-header .monitored-badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.92em;
+            font-weight: 600;
+        }
+        .machine-error-header img.machine-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #fff;
+            border: 1.5px solid #ececec;
+        }
+        .machine-error-remarks {
+            margin: 3px 0 0 36px;
+            color: #b8860b;
+            font-size: 0.93em;
+        }
+        .machine-error-list {
+            margin-top: 7px;
+        }
+        .machine-error-entry {
+            background: linear-gradient(90deg,#e74c3c 60%,#c0392b 100%);
+            margin-bottom: 6px;
+            padding: 7px 9px;
+            border-radius: 7px;
+            color: #fff;
+            box-shadow: 0 1px 4px #c0392b33;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .machine-error-entry .entry-header {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .machine-error-entry .entry-time {
+            font-size: 0.98em;
+            color: #fffbe6;
+        }
+        .machine-error-entry .entry-tech {
+            margin-left: auto;
+            font-size: 0.93em;
+            color: #fffbe6;
+        }
+        .machine-error-entry .entry-problem {
+            margin-top: 2px;
+            font-weight: 600;
+            color: #fffbe6;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .machine-error-entry .entry-problem span {
+            color: #fff;
+            font-weight: 400;
+        }
+        .machine-error-entry button {
+            margin-top: 4px;
+            background: #fff;
+            color: #e74c3c;
+            border: none;
+            border-radius: 5px;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-size: 0.93em;
+            font-weight: 700;
+            transition: background 0.2s, color 0.2s;
+        }
+        .machine-error-entry button:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+        @media (max-width: 1100px) {
+            .container { flex-direction: column; gap: 12px; }
+            .glass-card { padding: 12px 4px 10px 4px; }
+            #machineErrorList { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 700px) {
+            .glass-card { padding: 8px 2vw 6px 2vw; }
+            .form-title { font-size: 1.05rem; }
+            #machineErrorList { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .form-title { font-size: 1.01rem; padding-left: 6px; }
+            .glass-card { padding: 6px 1vw 4px 1vw; }
+            .main-content, .container { padding: 0 1vw 20px 1vw; }
+            .top-bar { padding: 8px 1vw 0 1vw; }
         }
         footer {
             text-align: center;
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        @media (max-width: 900px) {
-            .sidebar { width: 48px; padding-top: 10px; }
-            .sidebar .logo { font-size: 1rem; margin-bottom: 10px; }
-            .sidebar nav a { padding: 8px 4px; font-size: 0.9rem; justify-content: center; }
-            .sidebar nav a span, .sidebar-footer a span, .sidebar-footer button span { display: none; }
+            margin-top: 18px;
+            color: #888;
+            font-size: 0.98rem;
+            letter-spacing: 1px;
+            background: transparent;
         }
     </style>
 </head>
 <body>
-    <div class="osm-bg">OSM</div>
-    <!-- Sidebar Start -->
     <aside class="sidebar">
         <div class="logo">
-            <!-- Slot machine SVG icon for OSM logo -->
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="vertical-align:middle;margin-right:8px;" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="7" width="26" height="18" rx="5" fill="#fffbe6" stroke="#1abc9c" stroke-width="2"/>
                 <rect x="7" y="11" width="18" height="10" rx="3" fill="#43c6ac" stroke="#16a085" stroke-width="1.5"/>
@@ -168,11 +368,10 @@
             OSM
         </div>
         <nav>
-            <a href="index.html"><i class="fa-solid fa-chess-slot"></i> <span>Dashboard</span></a>
+            <a href="dashboard-pointA.html"><i class="fa-solid fa-chess-slot"></i> <span>Dashboard</span></a>
             <a href="technician.html"><i class="fa-solid fa-users-gear"></i> <span>Technician</span></a>
             <a href="slot-machines.html"><i class="fa-solid fa-desktop"></i> <span>Monitoring</span></a>
             <a href="error-report.html" class="active"><i class="fa-solid fa-triangle-exclamation"></i> <span>Error Report</span></a>
-            <a href="win-loss.html"><i class="fa-solid fa-coins"></i> <span>Win/Loss</span></a>
         </nav>
         <div class="sidebar-footer">
             <a href="#"><i class="fa-solid fa-user"></i> <span>Profile</span></a>
@@ -180,28 +379,53 @@
             <button onclick="alert('Logging out...')"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></button>
         </div>
     </aside>
-    <!-- Sidebar End -->
     <div class="main-content">
         <div class="top-bar">
             <span id="liveClock" class="live-clock"></span>
         </div>
         <div class="container">
-            <div class="glass-card">
-                <div class="form-title">Add Error Report</div>
-                <form id="errorForm">
-                    <label>Time</label>
-                    <input type="time" id="errorTime" required>
-                    <label>Machine</label>
-                    <input type="text" id="errorMachine" required>
-                    <label>Description</label>
-                    <textarea id="errorDesc" required></textarea>
-                    <button type="submit">Add Error</button>
+            <div class="glass-card" style="max-width:420px;min-width:260px;">
+                <div class="form-title"><i class="fa-solid fa-circle-exclamation" style="color:#e74c3c;"></i>Add Error Report</div>
+                <form id="errorForm" autocomplete="off">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:90px;">
+                            <label for="errorTime"><i class="fa-regular fa-clock"></i> Time</label>
+                            <input type="time" id="errorTime" required>
+                        </div>
+                        <div style="flex:2;min-width:120px;">
+                            <label for="errorMachine"><i class="fa-solid fa-desktop"></i> Machine</label>
+                            <select id="errorMachine" required>
+                                <option value="">Select Machine</option>
+                            </select>
+                        </div>
+                        <div style="flex:2;min-width:120px;">
+                            <label for="errorTechnician"><i class="fa-solid fa-user"></i> Technician</label>
+                            <select id="errorTechnician" required>
+                                <option value="">Select Technician</option>
+                                <option value="Anthony Lastra">Anthony Lastra</option>
+                                <option value="Cliff Richard Delos Arcos">Cliff Richard Delos Arcos</option>
+                                <option value="Edward Panaligan">Edward Panaligan</option>
+                                <option value="Eduardo Ilaga">Eduardo Ilaga</option>
+                                <option value="Erdie Boy Leonor">Erdie Boy Leonor</option>
+                                <option value="Gilbert Culabat">Gilbert Culabat</option>
+                                <option value="Jason Sebarre">Jason Sebarre</option>
+                                <option value="Julius Napoleon Rempillo">Julius Napoleon Rempillo</option>
+                                <option value="Raymund Colar">Raymund Colar</option>
+                                <option value="Roel Natividad">Roel Natividad</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label for="errorProblem"><i class="fa-solid fa-bug"></i> Problem</label>
+                    <textarea id="errorProblem" required placeholder="Describe the problem..."></textarea>
+                    <button type="submit">
+                        <i class="fa-solid fa-plus"></i> Add Error
+                    </button>
                     <div id="errorMsg"></div>
                 </form>
             </div>
-            <div class="glass-card">
-                <div class="form-title">Error Reports</div>
-                <div id="errorList"></div>
+            <div class="glass-card" style="margin-top:12px;">
+                <div class="form-title"><i class="fa-solid fa-list" style="color:#f8ffae;"></i>Machines & Error Reports</div>
+                <div id="machineErrorList"></div>
             </div>
         </div>
         <footer>
@@ -220,52 +444,138 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Load and display error reports
-        function loadErrors() {
-            const list = document.getElementById('errorList');
-            const data = JSON.parse(localStorage.getItem('errorsToday')) || [];
-            if (data.length === 0) {
-                list.innerHTML = "<div style='color:#888'>No error reports found.</div>";
-                return;
-            }
-            list.innerHTML = data.map((entry, idx) => `
-                <div class="hourly-entry" style="background:linear-gradient(90deg,#e74c3c 60%,#c0392b 100%);">
-                    <strong>${entry.time}</strong>
-                    <span>Machine: ${entry.machine}</span>
-                    <span>Description: ${entry.desc}</span>
-                    <button onclick="deleteError(${idx})" style="margin-top:8px;background:#fff;color:#e74c3c;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">Delete</button>
-                </div>
-            `).join('');
-        }
-        loadErrors();
+        // --- Machine List (should match your monitoring page) ---
+        const machineList = [
+            "TBR2010","TBR2020","TBR2030","TBR2031","TBR2032","TBR2033","TBR2034","TBR2035","TBR2036","TBR2037","TBR2038","TBR2039",
+            "TBR2040","TBR2041","TBR2042","TBR2043","TBR2051","TBR2052","TBR2053","TBR2054","TBR2055","TBR2056","TBR2057","TBR2058",
+            "TBR2059","TBR2060","TBR2061","TBR2062","TBR2063","TBR2064","TBR2044","TBR2047","TBR2048","TBR2049","TBR2050","TBR2067",
+            "TBR2068","TBR2069","TBR2070","TBR2071","TBR1819","TBR1820","TBR1821","TBR1822","TBR1823","TBR1824","TBR1890"
+        ];
 
-        // Add new error
+        // Map each machine to its PNG icon (same as slot monitoring)
+        function getMachineIcon(machine) {
+            if (["TBR2010","TBR2020","TBR2030","TBR2031","TBR2032","TBR2033","TBR2034","TBR2035","TBR2036","TBR2037","TBR2038","TBR2039",
+                "TBR2040","TBR2041","TBR2042","TBR2043","TBR2044","TBR2047","TBR2048","TBR2049","TBR2050","TBR2051","TBR2052","TBR2053",
+                "TBR2054","TBR2055","TBR2056","TBR2057","TBR2058","TBR2059","TBR2060","TBR2061","TBR2062","TBR2063","TBR2064","TBR2067",
+                "TBR2068","TBR2069","TBR2070","TBR2071"].includes(machine)) {
+                return "hurricane-horse-coin-combo.png";
+            }
+            if (["TBR1819","TBR1821","TBR1822","TBR1824","TBR1890"].includes(machine)) {
+                return "carnival-cow-coin-combo.png";
+            }
+            if (["TBR1820","TBR1823"].includes(machine)) {
+                return "5-dragons-pearl.png";
+            }
+            // Default fallback
+            return "hurricane-horse-coin-combo.png";
+        }
+
+        // --- Enhanced Machine Dropdown: All machines, highlight monitored ---
+        function loadMachineOptions() {
+            const select = document.getElementById('errorMachine');
+            select.innerHTML = '<option value="">Select Machine</option>';
+            const monitorData = JSON.parse(localStorage.getItem('machinesMonitorData_A')) || {};
+            machineList.forEach(id => {
+                const checked = monitorData[id]?.checked;
+                select.innerHTML += `<option value="${id}"${checked ? ' style="background:#d1f7e0;font-weight:bold;"' : ''}>${id}${checked ? ' (Monitored)' : ''}</option>`;
+            });
+        }
+        loadMachineOptions();
+
+        // --- Display all machines with error reports below each ---
+        function loadMachineErrorList() {
+            const monitorData = JSON.parse(localStorage.getItem('machinesMonitorData_A')) || {};
+            const errorData = JSON.parse(localStorage.getItem('errorsToday')) || [];
+            const container = document.getElementById('machineErrorList');
+            container.innerHTML = machineList.map(machine => {
+                const remarks = monitorData[machine]?.remarks || '';
+                const errors = errorData.filter(e => e.machine === machine);
+                const icon = getMachineIcon(machine);
+                return `
+                    <div class="machine-error-card">
+                        <div class="machine-error-header">
+                            <img src="${icon}" alt="icon" class="machine-thumb" loading="lazy" />
+                            <span class="machine-id">${machine}</span>
+                            ${monitorData[machine]?.checked ? '<span class="monitored-badge">Monitored</span>' : ''}
+                        </div>
+                        ${remarks ? `<div class="machine-error-remarks"><i class="fa-solid fa-comment-dots"></i> ${remarks}</div>` : ''}
+                        <div class="machine-error-list">
+                            ${errors.length === 0
+                                ? `<span style="color:#bbb;font-size:0.97em;">No error reports.</span>`
+                                : errors.map((e, idx) => `
+                                    <div class="machine-error-entry">
+                                        <div class="entry-header">
+                                            <span class="entry-time"><i class="fa-regular fa-clock"></i> ${e.time}</span>
+                                            <span class="entry-tech"><i class="fa-solid fa-user"></i> ${e.technician}</span>
+                                        </div>
+                                        <div class="entry-problem">
+                                            <i class="fa-solid fa-bug"></i>
+                                            <span>${e.problem}</span>
+                                        </div>
+                                        <button onclick="deleteErrorByMachine('${machine}', ${idx})">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        loadMachineErrorList();
+
+        // --- Add new error ---
         document.getElementById('errorForm').onsubmit = function(e) {
             e.preventDefault();
             const time = document.getElementById('errorTime').value;
-            const machine = document.getElementById('errorMachine').value.trim();
-            const desc = document.getElementById('errorDesc').value.trim();
+            const machine = document.getElementById('errorMachine').value;
+            const problem = document.getElementById('errorProblem').value.trim();
+            const technician = document.getElementById('errorTechnician').value;
 
-            if (!time || !machine || !desc) {
+            if (!time || !machine || !problem || !technician) {
                 document.getElementById('errorMsg').innerHTML = '<div class="error-msg">Please fill in all fields.</div>';
                 return;
             }
 
             const data = JSON.parse(localStorage.getItem('errorsToday')) || [];
-            data.push({ time, machine, desc });
+            data.push({ time, machine, problem, technician });
             localStorage.setItem('errorsToday', JSON.stringify(data));
             document.getElementById('errorMsg').innerHTML = '<div class="success-msg">Error added!</div>';
             this.reset();
-            loadErrors();
+            loadMachineErrorList();
+            setTimeout(() => { document.getElementById('errorMsg').innerHTML = ""; }, 1500);
+            loadMachineOptions();
         };
 
-        // Delete error
-        function deleteError(idx) {
+        // --- Delete error by machine and index ---
+        function deleteErrorByMachine(machine, idx) {
             const data = JSON.parse(localStorage.getItem('errorsToday')) || [];
-            data.splice(idx, 1);
+            let count = -1;
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].machine === machine) {
+                    count++;
+                    if (count === idx) {
+                        data.splice(i, 1);
+                        break;
+                    }
+                }
+            }
             localStorage.setItem('errorsToday', JSON.stringify(data));
-            loadErrors();
+            loadMachineErrorList();
+            loadMachineOptions();
         }
+
+        // --- Keep machine dropdown and error list in sync ---
+        window.addEventListener('focus', () => {
+            loadMachineOptions();
+            loadMachineErrorList();
+        });
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'machinesMonitorData_A' || e.key === 'errorsToday') {
+                loadMachineOptions();
+                loadMachineErrorList();
+            }
+        });
     </script>
 </body>
 </html>

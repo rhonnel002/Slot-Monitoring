@@ -14,8 +14,13 @@
             --sidebar-bg: #222;
             --accent: #1abc9c;
             --accent-dark: #16a085;
-            --glass-bg: rgba(255,255,255,0.85);
+            --glass-bg: rgba(255,255,255,0.92);
+            --glass-border: #ececec;
+            --widget-shadow: 0 8px 32px rgba(26,188,156,0.10), 0 1.5px 8px #ececec;
+            --gold: #ffb300;
+            --yellow-bg: #fffbe6;
         }
+        html { font-size: 15px; }
         body {
             font-family: 'Poppins', sans-serif;
             color: #222;
@@ -113,66 +118,99 @@
         }
         .live-clock {
             font-size: 1.2rem;
-            color: #111; /* Changed from #1abc9c to black */
+            color: #111;
             font-weight: 600;
             letter-spacing: 1px;
+            background: #f5f5f5;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            box-shadow: 0 2px 8px #ececec;
         }
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: auto;
+            display: flex;
+            flex-direction: row;
+            gap: 32px;
+        }
+        .left-panel, .right-panel {
+            flex: 1 1 0;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        .right-panel {
+            max-width: 420px;
         }
         .glass-card {
             background: var(--glass-bg);
-            padding: 28px 28px 20px 28px;
-            border-radius: 18px;
-            margin-bottom: 28px;
-            box-shadow: 0 8px 32px #ececec;
-            border: 1.5px solid #ececec;
+            padding: 36px 36px 28px 36px;
+            border-radius: 24px;
+            margin-bottom: 0;
+            box-shadow: var(--widget-shadow);
+            border: 1.5px solid var(--glass-border);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .glass-card:hover {
+            box-shadow: 0 16px 48px rgba(26,188,156,0.18), 0 2px 12px #b2dfdb;
+            transform: translateY(-2px) scale(1.025);
         }
         .form-title {
-            font-size: 1.3rem;
-            margin-bottom: 18px;
-            font-weight: 700;
-            color: #1abc9c;
+            font-size: 1.5rem;
+            margin-bottom: 22px;
+            font-weight: 900;
+            color: var(--accent-dark);
             letter-spacing: 1px;
+            text-shadow: 0 2px 8px #fff, 0 0px 2px #ececec;
+            border-left: 6px solid var(--accent);
+            padding-left: 18px;
+            text-transform: uppercase;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #1abc9c;
-            font-weight: 600;
+            margin-bottom: 7px;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+            font-size: 1.05rem;
         }
         input[type="time"], input[type="text"], input[type="number"], select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 12px;
+            margin-bottom: 18px;
             border: 1.5px solid #ececec;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
             color: #111;
             background: #f8f6f0;
             box-sizing: border-box;
-            transition: border 0.2s;
+            transition: border 0.2s, box-shadow 0.2s;
         }
         select:focus, input:focus {
-            border: 1.5px solid #1abc9c;
+            border: 1.5px solid var(--accent);
             outline: none;
+            box-shadow: 0 2px 8px #e0f7fa;
         }
         button {
-            padding: 10px 24px;
-            background-color: #1abc9c;
+            padding: 12px 28px;
+            background: linear-gradient(90deg, var(--accent) 60%, var(--accent-dark) 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.08rem;
             box-shadow: 0 2px 8px #ececec;
-            transition: background 0.2s;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
         }
         button:hover {
-            background-color: #16a085;
+            background: linear-gradient(90deg, var(--accent-dark) 60%, var(--accent) 100%);
             color: #fff;
+            box-shadow: 0 4px 16px #b2dfdb;
         }
         .success-msg {
             color: #388e3c;
@@ -184,74 +222,46 @@
             font-weight: 600;
             margin-top: 8px;
         }
-        .machines-table {
-            width: 100%;
-            border-radius: 10px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.08);
-            margin-bottom: 10px;
-            box-shadow: 0 2px 12px #ececec;
+        /* Monitoring Entries List */
+        #monitoringList {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .machines-header, .machines-row {
+        .hourly-entry {
+            background: linear-gradient(90deg, #e0f7fa 60%, #fffbe6 100%);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #ececec;
+            padding: 14px 18px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            min-height: 44px;
-            height: auto;
-        }
-        .machines-header {
-            background: rgba(26,188,156,0.13);
-            font-weight: 700;
-            color: #1abc9c;
-            font-size: 1.08em;
-            letter-spacing: 0.5px;
-        }
-        .machines-header .machines-col {
-            display: flex;
-            align-items: center;
-            height: 100%;
-        }
-        .machines-header .machines-col-name,
-        .machines-header .machines-col-remarks {
-            justify-content: flex-start;
-            text-align: left;
-        }
-        .machines-row:last-child {
-            border-bottom: none;
-        }
-        .machines-col {
-            padding: 10px 8px;
-            flex: 1;
-            text-align: left;
-        }
-        .machines-col-check {
-            flex: 0 0 36px;
-            text-align: center;
-        }
-        .machines-col-thumb {
-            flex: 0 0 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 2px;
-        }
-        .machines-col-name {
-            flex: 0 0 100px;
+            gap: 18px;
+            font-size: 1.08rem;
             font-weight: 600;
             color: #16a085;
-            letter-spacing: 1px;
-            text-align: left;
+            justify-content: space-between;
         }
-        .machines-col-remarks {
-            flex: 2;
-            text-align: left;
+        .hourly-entry strong {
+            color: #1abc9c;
+            font-size: 1.15rem;
+            margin-right: 8px;
         }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #888;
+        .hourly-entry button {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 14px;
             font-size: 0.98rem;
+            font-weight: 700;
+            margin: 0;
+            box-shadow: none;
+            transition: background 0.2s;
         }
+        .hourly-entry button:hover {
+            background: #c0392b;
+        }
+        /* Machines Gallery */
         .rizal-machines-label {
             display: flex;
             align-items: center;
@@ -260,7 +270,7 @@
             max-width: 340px;
             border-radius: 18px;
             box-shadow: 0 6px 24px 0 rgba(26,188,156,0.18), 0 1.5px 8px #ececec;
-            background: linear-gradient(120deg, #1abc9c 60%, #16a085 100%);
+            background: linear-gradient(120deg, var(--accent) 60%, var(--accent-dark) 100%);
             color: #fff;
             font-size: 2.2rem;
             font-weight: bold;
@@ -296,10 +306,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: #fffbe6;
-            border-radius: 12px;
+            background: var(--yellow-bg);
+            border-radius: 14px;
             box-shadow: 0 2px 12px #ffe08255;
-            padding: 10px 12px 6px 12px;
+            padding: 14px 16px 10px 16px;
             min-width: 110px;
             max-width: 120px;
             transition: box-shadow 0.2s, transform 0.2s;
@@ -313,93 +323,57 @@
             height: 70px;
             object-fit: cover;
             border-radius: 8px;
-            border: 1.5px solid #ffb300;
+            border: 2px solid var(--gold);
             background: #fff;
             margin-bottom: 6px;
         }
         .gallery-caption {
-            font-size: 0.98rem;
+            font-size: 1.02rem;
             color: #b8860b;
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
             letter-spacing: 0.5px;
         }
-        .machine-thumb {
-            width: 38px;
-            height: 38px;
-            object-fit: cover;
-            border-radius: 7px;
-            box-shadow: 0 1px 6px #ffe08255;
-            border: 1.5px solid #ffb300;
-            background: #fff;
-            margin: 0 auto;
-            display: block;
-            transition: transform 0.18s, box-shadow 0.18s;
-        }
-        .machines-row:hover .machine-thumb {
-            transform: scale(1.08);
-            box-shadow: 0 4px 16px #ffd54f88;
-        }
-        @media (max-width: 900px) {
-            .main-content { margin-left: 0; }
-            .sidebar { position: static; width: 100vw; height: auto; flex-direction: row; }
-            .sidebar { width: 48px; padding-top: 10px; }
-            .sidebar .logo { font-size: 1rem; margin-bottom: 10px; }
-            .sidebar nav, .sidebar-footer { flex-direction: row; }
-            .sidebar nav a, .sidebar-footer a, .sidebar-footer button { margin-bottom: 0; margin-right: 10px; }
-            .sidebar nav a { padding: 8px 4px; font-size: 0.9rem; justify-content: center; }
-            .sidebar nav a span, .sidebar-footer a span, .sidebar-footer button span { display: none; }
-        }
-        @media (max-width: 700px) {
-            .glass-card { padding: 12px 4px 10px 4px; }
-            .form-title { font-size: 1.1rem; }
-            .machines-header, .machines-row { font-size: 0.97em; }
-            .machines-col-name { flex: 0 0 80px; }
-        }
-        .theme-image-row {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 28px 0 10px 0;
-            padding: 20px 0 10px 0;
-            background: linear-gradient(135deg, #fffbe6 60%, #ffe082 100%);
-            border-radius: 18px;
-            box-shadow: 0 6px 32px 0 rgba(255, 193, 7, 0.18), 0 1.5px 8px #ffe082;
-            border: 2.5px solid #ffb300;
-            position: relative;
-            transition: box-shadow 0.3s, transform 0.2s;
-            overflow: hidden;
-        }
-        .theme-image-row:hover {
-            box-shadow: 0 12px 36px 0 rgba(255, 193, 7, 0.28), 0 3px 16px #ffe082;
-            transform: translateY(-2px) scale(1.02);
-        }
-        .machine-theme-image-pro {
-            max-width: 220px;
+        /* Machines Table */
+        .machines-table {
             width: 100%;
             border-radius: 14px;
-            box-shadow: 0 4px 24px #ffe082;
+            overflow: hidden;
+            background: rgba(255,255,255,0.12);
             margin-bottom: 10px;
-            background: #fff;
-            object-fit: cover;
-            border: 2px solid #fffde7;
-            transition: box-shadow 0.2s, border 0.2s;
+            box-shadow: 0 2px 12px #ececec;
         }
-        .theme-image-row:hover .machine-theme-image-pro {
-            box-shadow: 0 8px 32px #ffd54f;
-            border: 2px solid #ffb300;
+        .machines-header, .machines-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            min-height: 44px;
+            height: auto;
         }
-        .theme-caption {
-            font-size: 1.15rem;
-            color: #b8860b;
+        .machines-header {
+            background: rgba(26,188,156,0.13);
             font-weight: 700;
-            letter-spacing: 1.5px;
-            margin-bottom: 2px;
-            text-shadow: 0 2px 4px #fffbe6, 0 1px 0 #fffbe6;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 4px 18px;
-            border-radius: 8px;
-            box-shadow: 0 1px 4px #ffe08255;
+            color: var(--accent);
+            font-size: 1.08em;
+            letter-spacing: 0.5px;
+        }
+        .machines-header .machines-col {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        .machines-header .machines-col-name,
+        .machines-header .machines-col-remarks {
+            justify-content: flex-start;
+            text-align: left;
+        }
+        .machines-row:last-child {
+            border-bottom: none;
+        }
+        .machines-col {
+            padding: 10px 8px;
+            flex: 1;
+            text-align: left;
         }
         .machines-col-check {
             flex: 0 0 36px;
@@ -415,7 +389,7 @@
         .machines-col-name {
             flex: 0 0 100px;
             font-weight: 600;
-            color: #16a085;
+            color: var(--accent-dark);
             letter-spacing: 1px;
             text-align: left;
         }
@@ -423,12 +397,142 @@
             flex: 2;
             text-align: left;
         }
+        .machine-thumb {
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 7px;
+            box-shadow: 0 1px 6px #ffe08255;
+            border: 2px solid var(--gold);
+            background: #fff;
+            margin: 0 auto;
+            display: block;
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .machines-row:hover .machine-thumb {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px #ffd54f88;
+        }
         .col-wrap {
             display: inline-block;
             white-space: normal;
             line-height: 1.1;
             text-align: center;
             word-break: break-word;
+        }
+        /* Checked count badge */
+        #checkedCount {
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            padding: 4px 16px;
+            font-size: 1.08rem;
+            font-weight: 700;
+            margin-left: 10px;
+            box-shadow: 0 2px 8px #ececec;
+        }
+        /* Modal Styles */
+        .machine-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(34,34,34,0.25);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .machine-modal {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px #e0f7fa, 0 1.5px 8px #ececec;
+            padding: 32px 28px 22px 28px;
+            min-width: 320px;
+            max-width: 95vw;
+            position: relative;
+            animation: fadeIn 0.2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96);}
+            to { opacity: 1; transform: scale(1);}
+        }
+        .machine-modal h2 {
+            margin-top: 0;
+            color: #16a085;
+            font-size: 1.3rem;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+        .machine-modal .modal-label-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 12px;
+        }
+        .machine-modal label {
+            font-weight: 600;
+            color: #1abc9c;
+            font-size: 1.08rem;
+            margin-bottom: 0;
+            flex: 1;
+        }
+        .machine-modal input[type="checkbox"] {
+            width: 20px; height: 20px;
+            accent-color: #1abc9c;
+        }
+        .machine-modal .close-modal {
+            position: absolute;
+            top: 12px; right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .machine-modal .close-modal:hover {
+            color: #e74c3c;
+        }
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .container { flex-direction: column; gap: 18px; }
+            .glass-card { padding: 18px 8px 12px 8px; }
+        }
+        @media (max-width: 900px) {
+            .main-content { margin-left: 0; }
+            .sidebar { position: static; width: 100vw; height: auto; flex-direction: row; }
+            .sidebar { width: 48px; padding-top: 10px; }
+            .sidebar .logo { font-size: 1rem; margin-bottom: 10px; }
+            .sidebar nav, .sidebar-footer { flex-direction: row; }
+            .sidebar nav a, .sidebar-footer a, .sidebar-footer button { margin-bottom: 0; margin-right: 10px; }
+            .sidebar nav a { padding: 8px 4px; font-size: 0.9rem; justify-content: center; }
+            .sidebar nav a span, .sidebar-footer a span, .sidebar-footer button span { display: none; }
+            .container { flex-direction: column; gap: 18px; }
+        }
+        @media (max-width: 700px) {
+            .glass-card { padding: 12px 4px 10px 4px; }
+            .form-title { font-size: 1.1rem; }
+            .machines-header, .machines-row { font-size: 0.97em; }
+            .machines-col-name { flex: 0 0 80px; }
+        }
+        @media (max-width: 600px) {
+            .form-title { font-size: 1.05rem; padding-left: 8px; }
+            .glass-card { padding: 8px 2vw 6px 2vw; }
+            .main-content, .container { padding: 0 1vw 20px 1vw; }
+            .top-bar { padding: 8px 1vw 0 1vw; }
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            background: transparent;
+        }
+        .modal-feedback {
+            font-size: 1.1em;
+            margin-left: 4px;
+            vertical-align: middle;
+            transition: color 0.2s;
         }
     </style>
 </head>
@@ -454,7 +558,6 @@
             <a href="technician.html"><i class="fa-solid fa-users-gear"></i> <span>Technician</span></a>
             <a href="slot-machines.html" class="active"><i class="fa-solid fa-desktop"></i> <span>Monitoring</span></a>
             <a href="error-report.html"><i class="fa-solid fa-triangle-exclamation"></i> <span>Error Report</span></a>
-            <a href="win-loss.html"><i class="fa-solid fa-coins"></i> <span>Win/Loss</span></a>
         </nav>
         <div class="sidebar-footer">
             <a href="#"><i class="fa-solid fa-user"></i> <span>Profile</span></a>
@@ -469,80 +572,86 @@
             <span id="liveClock" class="live-clock"></span>
         </div>
         <div class="container">
-            <div class="glass-card">
-                <div class="form-title">Add Hourly Machine Monitoring</div>
-                <form id="monitoringForm">
-                    <label>Time</label>
-                    <input type="time" id="monitorTime" required>
-                    <label>Machine</label>
-                    <input type="text" id="monitorMachine" readonly required placeholder="Select machine(s) below">
-                    <label>Technician</label>
-                    <select id="monitorTechnician" required>
-                        <option value="">Select Technician</option>
-                        <option value="Anthony Lastra">Anthony Lastra</option>
-                        <option value="Cliff Richard Delos Arcos">Cliff Richard Delos Arcos</option>
-                        <option value="Edward Panaligan">Edward Panaligan</option>
-                        <option value="Eduardo Ilaga">Eduardo Ilaga</option>
-                        <option value="Erdie Boy Leonor">Erdie Boy Leonor</option>
-                        <option value="Gilbert Culabat">Gilbert Culabat</option>
-                        <option value="Jason Sebarre">Jason Sebarre</option>
-                        <option value="Julius Napoleon Rempillo">Julius Napoleon Rempillo</option>
-                        <option value="Raymund Colar">Raymund Colar</option>
-                        <option value="Roel Natividad">Roel Natividad</option>
-                    </select>
-                    <button type="submit">Add Entry</button>
-                    <div id="monitorMsg"></div>
-                </form>
-            </div>
-            <div class="glass-card">
-                <div class="form-title">Monitoring Entries</div>
-                <div id="monitoringList"></div>
-            </div>
-            <div class="glass-card">
-                <div class="rizal-machines-label">
-                    <i class="fa-solid fa-chess-slot"></i>
-                    RIZAL MACHINES
-                    <span>MONITORING</span>
-                </div>
-                <div class="machine-gallery">
-                    <div class="machine-gallery-item">
-                        <img src="carnival-cow-coin-combo.png" alt="Carnival Cow Coin Combo">
-                        <div class="gallery-caption">Carnival Cow</div>
-                    </div>
-                    <div class="machine-gallery-item">
-                        <img src="hurricane-horse-coin-combo.png" alt="Hurricane Horse Coin Combo">
-                        <div class="gallery-caption">Hurricane Horse</div>
-                    </div>
-                    <div class="machine-gallery-item">
-                        <img src="5-dragons-gold.png" alt="5 Dragons Gold">
-                        <div class="gallery-caption">5 Dragons Gold</div>
-                    </div>
-                    <div class="machine-gallery-item">
-                        <img src="5-dragons-pearl.png" alt="5 Dragons Pearl">
-                        <div class="gallery-caption">5 Dragons Pearl</div>
-                    </div>
-                </div>
-                <div class="form-title" style="display:flex;align-items:center;justify-content:space-between;">
-                    <span>Slot Machines Monitoring List</span>
-                    <span id="checkedCount" style="font-size:1.2rem;font-weight:700;color:#1abc9c;"></span>
-                </div>
-                <form id="machinesMonitorForm">
-                    <div class="machines-table">
-                        <div class="machines-header">
-                            <div class="machines-col machines-col-thumb"></div>
-                            <div class="machines-col machines-col-check" style="justify-content:center;text-align:center;">Check</div>
-                            <div class="machines-col machines-col-name" style="justify-content:flex-start;text-align:left;">Machine</div>
-                            <div class="machines-col machines-col-remarks" style="justify-content:flex-start;text-align:left;">Remarks</div>
+            <div class="left-panel">
+                <div class="glass-card">
+                    <div class="form-title">Slot Machines Monitoring List</div>
+                    <form id="machinesMonitorForm" autocomplete="off">
+                        <div class="machines-table">
+                            <div class="machines-header">
+                                <div class="machines-col machines-col-thumb"></div>
+                                <div class="machines-col machines-col-check" style="justify-content:center;text-align:center;">Check</div>
+                                <div class="machines-col machines-col-name" style="justify-content:flex-start;text-align:left;">Machine</div>
+                                <div class="machines-col machines-col-remarks" style="justify-content:flex-start;text-align:left;">Remarks</div>
+                            </div>
+                            <div id="machinesRows"></div>
                         </div>
-                        <div id="machinesRows"></div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <button type="submit" style="margin-top:18px;">Save Monitoring</button>
+                            <span id="checkedCount"></span>
+                        </div>
+                        <div id="machinesMonitorMsg"></div>
+                    </form>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="glass-card">
+                    <div class="rizal-machines-label">
+                        <i class="fa-solid fa-chess-slot"></i>
+                        RIZAL MACHINES
+                        <span>MONITORING</span>
                     </div>
-                    <button type="submit" style="margin-top:18px;">Save Monitoring</button>
-                    <div id="machinesMonitorMsg"></div>
-                </form>
+                    <div class="machine-gallery">
+                        <div class="machine-gallery-item">
+                            <img src="carnival-cow-coin-combo.png" alt="Carnival Cow Coin Combo">
+                            <div class="gallery-caption">Carnival Cow</div>
+                        </div>
+                        <div class="machine-gallery-item">
+                            <img src="hurricane-horse-coin-combo.png" alt="Hurricane Horse Coin Combo">
+                            <div class="gallery-caption">Hurricane Horse</div>
+                        </div>
+                        <div class="machine-gallery-item">
+                            <img src="5-dragons-gold.png" alt="5 Dragons Gold">
+                            <div class="gallery-caption">5 Dragons Gold</div>
+                        </div>
+                        <div class="machine-gallery-item">
+                            <img src="5-dragons-pearl.png" alt="5 Dragons Pearl">
+                            <div class="gallery-caption">5 Dragons Pearl</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="form-title">Add Hourly Machine Monitoring</div>
+                    <form id="monitoringForm" autocomplete="off">
+                        <label>Time</label>
+                        <input type="time" id="monitorTime" required>
+                        <label>Machine</label>
+                        <input type="text" id="monitorMachine" readonly required placeholder="Select machine(s) on the left">
+                        <label>Technician</label>
+                        <select id="monitorTechnician" required>
+                            <option value="">Select Technician</option>
+                            <option value="Anthony Lastra">Anthony Lastra</option>
+                            <option value="Cliff Richard Delos Arcos">Cliff Richard Delos Arcos</option>
+                            <option value="Edward Panaligan">Edward Panaligan</option>
+                            <option value="Eduardo Ilaga">Eduardo Ilaga</option>
+                            <option value="Erdie Boy Leonor">Erdie Boy Leonor</option>
+                            <option value="Gilbert Culabat">Gilbert Culabat</option>
+                            <option value="Jason Sebarre">Jason Sebarre</option>
+                            <option value="Julius Napoleon Rempillo">Julius Napoleon Rempillo</option>
+                            <option value="Raymund Colar">Raymund Colar</option>
+                            <option value="Roel Natividad">Roel Natividad</option>
+                        </select>
+                        <button type="submit">Add Entry</button>
+                        <div id="monitorMsg"></div>
+                    </form>
+                </div>
+                <div class="glass-card">
+                    <div class="form-title">Monitoring Entries</div>
+                    <div id="monitoringList"></div>
+                </div>
             </div>
         </div>
         <footer>
-            <p>&copy; 2025 Slot Monitoring System | All Rights Reserved</p>
+            <p style="text-align:center; margin: 0 auto;">&copy; 2025 Slot Monitoring System | All Rights Reserved</p>
         </footer>
     </div>
     <script>
@@ -570,11 +679,52 @@
                     <strong>${entry.time}</strong>
                     <span>Machines: ${entry.machineCount}</span>
                     <span>Technician: ${entry.technician}</span>
-                    <button onclick="deleteEntry(${idx})" style="margin-top:8px;background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">Delete</button>
+                    <button onclick="deleteEntry(${idx})">Delete</button>
                 </div>
             `).join('');
         }
         loadMonitoring();
+
+        // Utility: Get today's date as YYYY-MM-DD
+        function getTodayDate() {
+            const now = new Date();
+            return now.toISOString().slice(0, 10);
+        }
+
+        // Utility: Get current shift string (e.g., "2025-06-11|07:00-15:00")
+        function getCurrentShiftKey() {
+            // Get on-duty data from localStorage
+            const onDuty = JSON.parse(localStorage.getItem('onDutyTechnician_A'));
+            if (!onDuty || !onDuty.shiftDate || !onDuty.shiftTime) {
+                // Fallback to today's date and "unknown" shift
+                return getTodayDate() + '|unknown';
+            }
+            return onDuty.shiftDate + '|' + onDuty.shiftTime;
+        }
+
+        // On load, check if monitoring entries are for the current shift, else reset
+        function checkAndResetMonitoringEntries() {
+            const storedShift = localStorage.getItem('hourlyMonitoring_A_shift');
+            const currentShift = getCurrentShiftKey();
+
+            if (storedShift !== currentShift) {
+                // New shift: reset entries
+                localStorage.setItem('hourlyMonitoring_A', JSON.stringify([]));
+                localStorage.setItem('hourlyMonitoring_A_shift', currentShift);
+            }
+        }
+        checkAndResetMonitoringEntries();
+
+        // When on-duty shift changes, reset monitoring entries
+        function listenForShiftChange() {
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'onDutyTechnician_A') {
+                    checkAndResetMonitoringEntries();
+                    loadMonitoring();
+                }
+            });
+        }
+        listenForShiftChange();
 
         // Add new entry
         document.getElementById('monitoringForm').onsubmit = function(e) {
@@ -588,7 +738,10 @@
                 return;
             }
 
-            const data = JSON.parse(localStorage.getItem('hourlyMonitoring_A')) || [];
+            const today = getTodayDate();
+            let data = JSON.parse(localStorage.getItem('hourlyMonitoring_A')) || [];
+            localStorage.setItem('hourlyMonitoring_A_date', today);
+
             data.push({ time, machineCount, technician });
             localStorage.setItem('hourlyMonitoring_A', JSON.stringify(data));
             document.getElementById('monitorMsg').innerHTML = '<div class="success-msg">Entry added!</div>';
@@ -618,7 +771,7 @@
         ];
 
         const carnivalMachines = [
-            "TBR2010","TBR2020", // Added these two
+            "TBR2010","TBR2020",
             "TBR2057","TBR2058","TBR2059","TBR2060","TBR2061","TBR2062","TBR2063","TBR2064",
             "TBR2044","TBR2047","TBR2048","TBR2049","TBR2050","TBR2067","TBR2068","TBR2069","TBR2070","TBR2071"
         ];
@@ -631,13 +784,128 @@
             "TBR1820", "TBR1823"
         ];
 
+        // Modal logic
+        let currentModalMachine = null;
+        const machineModalLabels = ['CCTV', 'Audio', 'Touchscreen', 'Display'];
+
+        function openMachineModal(machineId) {
+            currentModalMachine = machineId;
+            const modalState = JSON.parse(localStorage.getItem('machineModalChecks_' + machineId)) || {};
+            let modalHtml = `
+                <div class="machine-modal-overlay" id="machineModalOverlay" onclick="closeMachineModal(event)">
+                    <div class="machine-modal" onclick="event.stopPropagation()">
+                        <button class="close-modal" onclick="closeMachineModal(event)">&times;</button>
+                        <h2>Machine: ${machineId}</h2>
+                        <form id="machineModalForm">
+            `;
+            machineModalLabels.forEach(label => {
+                const checked = modalState[label] ? 'checked' : '';
+                modalHtml += `
+                    <div class="modal-label-row">
+                        <label for="modal-${label}">${label}</label>
+                        <input type="checkbox" id="modal-${label}" name="${label}" ${checked} onchange="onModalCheckboxChange('${machineId}', this)">
+                        <span id="modal-feedback-${label}" class="modal-feedback"></span>
+                    </div>
+                `;
+            });
+            modalHtml += `
+                        <button type="submit" style="margin-top:12px;">Save</button>
+                    </form>
+                </div>
+            </div>
+        `;
+            const modalDiv = document.createElement('div');
+            modalDiv.innerHTML = modalHtml;
+            document.body.appendChild(modalDiv);
+
+            // Add visual feedback for checked/unchecked
+            machineModalLabels.forEach(label => {
+                const cb = document.getElementById('modal-' + label);
+                if (cb) {
+                    updateModalFeedback(label, cb.checked);
+                    cb.addEventListener('change', function() {
+                        updateModalFeedback(label, cb.checked);
+                    });
+                }
+            });
+
+            document.getElementById('machineModalForm').onsubmit = function(e) {
+                e.preventDefault();
+                saveModalChecks(machineId);
+                closeMachineModal();
+            };
+        }
+
+        function updateModalFeedback(label, checked) {
+            const feedback = document.getElementById('modal-feedback-' + label);
+            if (feedback) {
+                feedback.innerHTML = checked
+                    ? '<i class="fa-solid fa-circle-check" style="color:#16a085;margin-left:6px;"></i>'
+                    : '<i class="fa-regular fa-circle" style="color:#bbb;margin-left:6px;"></i>';
+            }
+        }
+
+        function closeMachineModal(e) {
+            if (e) e.preventDefault();
+            const overlay = document.getElementById('machineModalOverlay');
+            if (overlay) overlay.parentNode.remove();
+            currentModalMachine = null;
+        }
+
+        // Save modal checks and update outside checkbox if all are checked
+        function saveModalChecks(machineId) {
+            const state = {};
+            let allChecked = true;
+            machineModalLabels.forEach(label => {
+                const checked = document.getElementById('modal-' + label).checked;
+                state[label] = checked;
+                if (!checked) allChecked = false;
+            });
+            localStorage.setItem('machineModalChecks_' + machineId, JSON.stringify(state));
+            // If all checked, check outside checkbox; else uncheck
+            const outsideCheckbox = document.querySelector(`input[name="machineCheck"][value="${machineId}"]`);
+            if (outsideCheckbox) {
+                outsideCheckbox.checked = allChecked;
+                // Also update saved monitoring data
+                const data = JSON.parse(localStorage.getItem('machinesMonitorData_A')) || {};
+                if (!data[machineId]) data[machineId] = {};
+                data[machineId].checked = allChecked;
+                localStorage.setItem('machinesMonitorData_A', JSON.stringify(data));
+                updateCheckedCount();
+                updateMonitorMachineInput();
+            }
+        }
+
+        // When a modal checkbox is changed, check if all are checked and update outside checkbox live
+        function onModalCheckboxChange(machineId, cb) {
+            updateModalFeedback(cb.name, cb.checked);
+            let allChecked = true;
+            machineModalLabels.forEach(label => {
+                if (!document.getElementById('modal-' + label).checked) allChecked = false;
+            });
+            const outsideCheckbox = document.querySelector(`input[name="machineCheck"][value="${machineId}"]`);
+            if (outsideCheckbox) {
+                outsideCheckbox.checked = allChecked;
+                // Also update saved monitoring data live
+                const data = JSON.parse(localStorage.getItem('machinesMonitorData_A')) || {};
+                if (!data[machineId]) data[machineId] = {};
+                data[machineId].checked = allChecked;
+                localStorage.setItem('machinesMonitorData_A', JSON.stringify(data));
+                updateCheckedCount();
+                updateMonitorMachineInput();
+            }
+        }
+
+        // Update renderMachinesRows to make machine names clickable and reflect modal checks
         function renderMachinesRows() {
             const saved = JSON.parse(localStorage.getItem('machinesMonitorData_A')) || {};
             let rows = '';
             machineList.forEach(machine => {
-                const checked = saved[machine]?.checked ? "checked" : "";
+                // Check if all modal checkboxes are checked for this machine
+                const modalState = JSON.parse(localStorage.getItem('machineModalChecks_' + machine)) || {};
+                const allModalChecked = machineModalLabels.every(label => modalState[label]);
+                const checked = allModalChecked ? "checked" : (saved[machine]?.checked ? "checked" : "");
                 const remarks = saved[machine]?.remarks || "";
-
                 let imgSrc, imgAlt, caption;
                 if (carnivalMachines.includes(machine)) {
                     imgSrc = "carnival-cow-coin-combo.png";
@@ -665,7 +933,9 @@
                         <div class="machines-col machines-col-check">
                             <input type="checkbox" name="machineCheck" value="${machine}" ${checked} onchange="handleMachineCheck(this)">
                         </div>
-                        <div class="machines-col machines-col-name">${machine}</div>
+                        <div class="machines-col machines-col-name">
+                            <a href="#" onclick="openMachineModal('${machine}');return false;" style="color:#16a085;text-decoration:underline;cursor:pointer;">${machine}</a>
+                        </div>
                         <div class="machines-col machines-col-remarks">
                             <input type="text" name="remarks-${machine}" value="${remarks}" placeholder="Remarks...">
                         </div>
@@ -674,6 +944,7 @@
             });
             document.getElementById('machinesRows').innerHTML = rows;
             updateCheckedCount();
+            updateMonitorMachineInput();
         }
         renderMachinesRows();
 
@@ -689,34 +960,65 @@
             const data = {};
             machineList.forEach(machine => {
                 const checked = document.querySelector(`input[name="machineCheck"][value="${machine}"]`).checked;
-                const cctv = document.querySelector(`input[name="cctv-${machine}"]`).checked;
-                const touch = document.querySelector(`input[name="touch-${machine}"]`).checked;
-                const audio = document.querySelector(`input[name="audio-${machine}"]`).checked;
-                const display = document.querySelector(`input[name="display-${machine}"]`).checked;
-                const ideck = document.querySelector(`input[name="ideck-${machine}"]`).checked;
                 const remarks = document.querySelector(`input[name="remarks-${machine}"]`).value.trim();
-                data[machine] = { checked, cctv, touch, audio, display, ideck, remarks };
+                data[machine] = { checked, remarks };
             });
             localStorage.setItem('machinesMonitorData_A', JSON.stringify(data));
             document.getElementById('machinesMonitorMsg').innerHTML = '<div class="success-msg">Monitoring saved!</div>';
             updateCheckedCount();
         };
 
-        // When a machine is checked, set it as the value in the Add Hourly Machine Monitoring form
-        function handleMachineCheck(checkbox) {
-            // Get all checked machines
-            const checked = document.querySelectorAll('input[name="machineCheck"]:checked').length;
-            document.getElementById('monitorMachine').value = checked > 0 ? checked + " machine(s) selected" : "";
-            updateCheckedCount();
+        // Helper: Get all checked machine IDs
+        function getCheckedMachines() {
+            return Array.from(document.querySelectorAll('input[name="machineCheck"]:checked')).map(cb => cb.value);
         }
 
-        // On page load, if a machine is checked, set it in the input
+        // Update the Add Hourly Machine Monitoring input with the checked machines (IDs and count)
+        function updateMonitorMachineInput() {
+            const checkedMachines = getCheckedMachines();
+            const monitorInput = document.getElementById('monitorMachine');
+            if (monitorInput) {
+                if (checkedMachines.length > 0) {
+                    monitorInput.value = `${checkedMachines.length} machine(s) selected: ${checkedMachines.join(', ')}`;
+                    monitorInput.title = checkedMachines.join(', ');
+                } else {
+                    monitorInput.value = "";
+                    monitorInput.title = "";
+                }
+            }
+        }
+
+        // Enhance: When a machine is checked/unchecked, update the input dynamically
+        function handleMachineCheck(checkbox) {
+            updateCheckedCount();
+            updateMonitorMachineInput();
+        }
+
+        // Enhance: When modal checkboxes change, update the input dynamically
+        function onModalCheckboxChange(machineId, cb) {
+            updateModalFeedback(cb.name, cb.checked);
+            let allChecked = true;
+            machineModalLabels.forEach(label => {
+                if (!document.getElementById('modal-' + label).checked) allChecked = false;
+            });
+            const outsideCheckbox = document.querySelector(`input[name="machineCheck"][value="${machineId}"]`);
+            if (outsideCheckbox) {
+                outsideCheckbox.checked = allChecked;
+                // Also update saved monitoring data live
+                const data = JSON.parse(localStorage.getItem('machinesMonitorData_A')) || {};
+                if (!data[machineId]) data[machineId] = {};
+                data[machineId].checked = allChecked;
+                localStorage.setItem('machinesMonitorData_A', JSON.stringify(data));
+                updateCheckedCount();
+                updateMonitorMachineInput();
+            }
+        }
+
+        // On page load, always show the checked machines in the input
         window.onload = function() {
             renderMachinesRows();
             loadMonitoring();
-            // Set the machine input if any is checked
-            const checked = document.querySelector('input[name="machineCheck"]:checked');
-            document.getElementById('monitorMachine').value = checked ? checked.value : "";
+            updateMonitorMachineInput();
         };
     </script>
 </body>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technician - Slot Machines Monitoring</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <style>
+    :root {
+      --sidebar-width: 220px;
+      --sidebar-bg: #222;
+      --accent: #1abc9c;
+      --accent-dark: #16a085;
+      --glass-bg: rgba(255,255,255,0.18);
+      --glass-border: #ececec;
+      --widget-bg: rgba(255,255,255,0.95);
+      --widget-shadow: 0 8px 32px rgba(26,188,156,0.10), 0 1.5px 8px #ececec;
+    }
+    html { font-size: 15px; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(120deg, #f8f6f0 0%, #e0f7fa 100%);
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+    .osm-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(255,255,255,0.18);
+      z-index: -1;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 10rem;
+      color: rgba(0,0,0,0.07);
+      font-weight: bold;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: 2rem;
+      font-family: 'Poppins', sans-serif;
+      text-shadow: 0 2px 8px #fff, 0 0px 2px #ececec;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 0 10px 0;
+      z-index: 10;
+    }
+    .sidebar .logo {
+      font-size: 1.5rem;
+      color: #111;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 2px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 0;
+      box-shadow: 0 2px 8px #ececec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar .logo svg {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    .sidebar nav a {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px 24px;
+      border-radius: 5px 0 0 5px;
+      transition: background 0.3s;
+      font-size: 1rem;
+    }
+    .sidebar nav a i { margin-right: 10px; }
+    .sidebar nav a span { display: inline; }
+    .sidebar nav a.active, .sidebar nav a:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    .sidebar-footer a, .sidebar-footer button {
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px 24px;
+      border-radius: 5px;
+      background: var(--accent-dark);
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .sidebar-footer a i, .sidebar-footer button i { margin-right: 10px; }
+    .sidebar-footer button:hover { background: #e74c3c; }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+      width: calc(100vw - var(--sidebar-width));
+      overflow-x: auto;
+      color: #111;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 24px 40px 0 40px;
+    }
+    .live-clock {
+      font-size: 1.2rem;
+      color: #111;
+      background: #f5f5f5;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-family: 'Consolas', monospace;
+      font-weight: bold;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 8px #ececec;
+    }
+    .container {
+      padding: 0 24px 24px 24px;
+      max-width: 900px;
+      margin: auto;
+      box-sizing: border-box;
+      color: #111;
+    }
+    .glass-card {
+      background: linear-gradient(120deg, #fff 80%, #e0f7fa 100%);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px #e0f7fa, 0 1.5px 8px #ececec;
+      border: none;
+      padding: 36px 40px 32px 40px;
+      margin-bottom: 32px;
+      color: #111;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 240px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .glass-card:hover {
+      box-shadow: 0 16px 48px rgba(26,188,156,0.18), 0 2px 12px #b2dfdb;
+      transform: translateY(-2px) scale(1.025);
+    }
+    .form-title {
+      font-size: 2rem;
+      margin-bottom: 28px;
+      text-align: left;
+      color: #16a085;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #fff, 0 0px 2px #ececec;
+      text-transform: uppercase;
+      border-left: 6px solid #1abc9c;
+      padding-left: 18px;
+    }
+    .form-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+    }
+    .form-col {
+      flex: 1 1 260px;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #1abc9c;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      font-size: 1.05rem;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      border: 1.5px solid #ececec;
+      font-size: 1rem;
+      color: #111;
+      background: #f8f6f0;
+      box-sizing: border-box;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border: 1.5px solid var(--accent);
+      outline: none;
+      box-shadow: 0 2px 8px #e0f7fa;
+    }
+    select, input[type="date"] {
+      background: #f8f6f0 url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7.293 8.293a1 1 0 011.414 0L10 9.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z'/></svg>") no-repeat right 12px center/18px 18px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+      padding-right: 36px;
+    }
+    select[multiple] {
+      height: 120px;
+      background-position: right 12px top 16px;
+    }
+    button {
+      background: linear-gradient(90deg, #1abc9c 60%, #16a085 100%);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.08rem;
+      padding: 12px 0;
+      box-shadow: 0 2px 8px #ececec;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #16a085 60%, #1abc9c 100%);
+      color: #fff;
+      box-shadow: 0 4px 16px #b2dfdb;
+    }
+    .choices__inner {
+      background: #f8f6f0;
+      border-radius: 10px;
+      border: 1.5px solid #ececec;
+      min-height: 44px;
+      font-size: 1rem;
+      color: #111;
+      box-shadow: none;
+      padding: 6px 10px;
+    }
+    .choices__list--multiple .choices__item {
+      background: #1abc9c;
+      color: #fff;
+      border-radius: 6px;
+      padding: 2px 10px;
+      margin-right: 2px;
+      margin-bottom: 2px;
+      font-size: 0.97rem;
+      display: inline-block;
+      border: none;
+    }
+    .choices__list--dropdown, .choices__list[aria-expanded] {
+      background: #fff;
+      border-radius: 10px;
+      border: 1.5px solid #ececec;
+      box-shadow: 0 2px 8px #e0f7fa;
+    }
+    .choices__item--selectable.is-highlighted {
+      background: #e0f7fa;
+      color: #16a085;
+    }
+    .choices__button {
+      color: #fff;
+      background: #e74c3c;
+      border-radius: 50%;
+      margin-left: 6px;
+      font-size: 1rem;
+      padding: 0 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .choices__button:hover {
+      background: #c0392b;
+    }
+    .error-msg {
+      color: #c0392b;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .success-msg {
+      color: #388e3c;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .form-footer {
+      margin-top: 18px;
+      text-align: right;
+      font-size: 0.98rem;
+      color: #888;
+    }
+    .form-section-title {
+      font-size: 1.08rem;
+      color: #16a085;
+      font-weight: 700;
+      margin-bottom: 10px;
+      margin-top: 18px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-bottom: 1.5px solid #e0f7fa;
+      padding-bottom: 4px;
+    }
+    @media (max-width: 900px) {
+      .main-content, .container { padding-left: 2vw; padding-right: 2vw; }
+      .sidebar { width: 48px; padding-top: 10px; }
+      .sidebar .logo { font-size: 1rem; margin-bottom: 10px; }
+      .sidebar nav a { padding: 8px 4px; font-size: 0.9rem; justify-content: center; }
+      .sidebar nav a span, .sidebar-footer a span, .sidebar-footer button span { display: none; }
+      .main-content { margin-left: 48px; width: calc(100vw - 48px);}
+      footer { left: 48px; width: calc(100vw - 48px);}
+      .glass-card { padding: 18px 8px 12px 8px; }
+      .form-title { font-size: 1.2rem; padding-left: 8px; }
+      .form-row { flex-direction: column; gap: 0; }
+    }
+    @media (max-width: 600px) {
+      .form-title { font-size: 1.1rem; }
+      .glass-card { padding: 8px 2vw 6px 2vw; }
+      .main-content, .container { padding: 0 1vw 20px 1vw; }
+      .top-bar { padding: 8px 1vw 0 1vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="osm-bg">OSM</div>
+  <!-- Sidebar Start -->
+  <aside class="sidebar">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="vertical-align:middle;margin-right:8px;" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="7" width="26" height="18" rx="5" fill="#fffbe6" stroke="#1abc9c" stroke-width="2"/>
+        <rect x="7" y="11" width="18" height="10" rx="3" fill="#43c6ac" stroke="#16a085" stroke-width="1.5"/>
+        <circle cx="12" cy="16" r="2" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+        <circle cx="16" cy="16" r="2" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+        <circle cx="20" cy="16" r="2" fill="#43c6ac" stroke="#222" stroke-width="1"/>
+        <rect x="13" y="20" width="6" height="2" rx="1" fill="#222"/>
+        <rect x="27" y="10" width="2" height="8" rx="1" fill="#f8ffae" stroke="#222" stroke-width="1"/>
+        <circle cx="28" cy="10" r="1" fill="#e74c3c" stroke="#222" stroke-width="1"/>
+      </svg>
+      OSM
+    </div>
+    <nav>
+      <a href="dashboard-pointA.html"><i class="fa-solid fa-chess-slot"></i> <span>Dashboard</span></a>
+      <a href="technician.html" class="active"><i class="fa-solid fa-users-gear"></i> <span>Technician</span></a>
+      <a href="slot-machines.html"><i class="fa-solid fa-desktop"></i> <span>Monitoring</span></a>
+      <a href="error-report.html"><i class="fa-solid fa-triangle-exclamation"></i> <span>Error Report</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#"><i class="fa-solid fa-user"></i> <span>Profile</span></a>
+      <a href="#"><i class="fa-solid fa-gear"></i> <span>Settings</span></a>
+      <button onclick="alert('Logging out...')"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></button>
+    </div>
+  </aside>
+  <!-- Sidebar End -->
+  <div class="main-content">
+    <div class="top-bar">
+      <span id="liveClock" class="live-clock"></span>
+    </div>
+    <div class="container">
+      <div class="glass-card">
+        <div class="form-title">On-Duty Technician Setup</div>
+        <form id="technicianForm" autocomplete="off">
+          <div class="form-row">
+            <div class="form-col">
+              <label for="shiftDate">Shift Date</label>
+              <input type="date" id="shiftDate" required>
+            </div>
+            <div class="form-col">
+              <label for="shiftTime">Shift Time</label>
+              <select id="shiftTime" required>
+                <option value="">Select shift time</option>
+                <option value="0600H - 1500H">0600H - 1500H</option>
+                <option value="1400H - 2300H">1400H - 2300H</option>
+                <option value="2200H - 0700H">2200H - 0700H</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-col">
+              <label for="supervisor">Supervisor</label>
+              <select id="supervisor" required>
+                <option value="">Select supervisor</option>
+                <option value="None">None</option>
+                <option value="Herby P. Perez">Herby P. Perez</option>
+              </select>
+            </div>
+            <div class="form-col">
+              <label for="osmEng">OSM Engineer</label>
+              <select id="osmEng" required>
+                <option value="">Select OSM Engineer</option>
+                <option value="None">None</option>
+                <option value="Rhonnel Jhon B Deza">Rhonnel Jhon B Deza</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-section-title">Team</div>
+          <div class="form-row">
+            <div class="form-col">
+              <label for="teamLeaders">Team Leader(s)</label>
+              <select id="teamLeaders" class="choices-multiple" multiple required>
+                <option value="Cristie De Jesus">Cristie De Jesus</option>
+                <option value="Dolan Caranog">Dolan Caranog</option>
+                <option value="Earl Hubahib">Earl Hubahib</option>
+                <option value="Francis Aduna">Francis Aduna</option>
+                <option value="None">None</option>
+              </select>
+            </div>
+            <div class="form-col">
+              <label for="technicians">Technician(s)</label>
+              <select id="technicians" class="choices-multiple" multiple required>
+                <option value="Anthony Lastra">Anthony Lastra</option>
+                <option value="Cliff Richard Delos Arcos">Cliff Richard Delos Arcos</option>
+                <option value="Edward Panaligan">Edward Panaligan</option>
+                <option value="Eduardo Ilaga">Eduardo Ilaga</option>
+                <option value="Erdie Boy Leonor">Erdie Boy Leonor</option>
+                <option value="Gilbert Culabat">Gilbert Culabat</option>
+                <option value="Jason Sebarre">Jason Sebarre</option>
+                <option value="Julius Napoleon Rempillo">Julius Napoleon Rempillo</option>
+                <option value="Raymund Colar">Raymund Colar</option>
+                <option value="Roel Natividad">Roel Natividad</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit">Save</button>
+          <div id="formMsg"></div>
+          <div class="form-footer">
+            <i class="fa-solid fa-circle-info"></i>
+            All fields are required. Saved data will reflect on the dashboard.
+          </div>
+        </form>
+      </div>
+    </div>
+    <footer>
+      <p style="text-align:center; margin: 0 auto;">&copy; 2025 Slot Monitoring System | All Rights Reserved</p>
+    </footer>
+  </div>
+  <script>
+    // Live Clock
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('liveClock').textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Save form data to localStorage
+    document.getElementById('technicianForm').onsubmit = function(e) {
+      e.preventDefault();
+      const shiftTime = document.getElementById('shiftTime').value;
+      const shiftDate = document.getElementById('shiftDate').value;
+      const supervisor = document.getElementById('supervisor').value;
+      const osmEng = document.getElementById('osmEng').value;
+      const teamLeaders = Array.from(document.getElementById('teamLeaders').selectedOptions).map(opt => opt.value);
+      const technicians = Array.from(document.getElementById('technicians').selectedOptions).map(opt => opt.value);
+
+      if (!shiftTime || !shiftDate || !supervisor || !osmEng || teamLeaders.length === 0 || technicians.length === 0) {
+        document.getElementById('formMsg').innerHTML = '<div class="error-msg">Please fill in all fields.</div>';
+        return;
+      }
+
+      const data = { shiftTime, shiftDate, supervisor, osmEng, teamLeaders, technicians };
+      localStorage.setItem('onDutyTechnician_A', JSON.stringify(data));
+      document.getElementById('formMsg').innerHTML = '<div class="success-msg">Saved! Go back to Dashboard to see changes.</div>';
+      setTimeout(() => { window.location.href = 'dashboard-pointA.html'; }, 1000);
+    };
+
+    // Load existing data if present
+    window.onload = function() {
+      const data = JSON.parse(localStorage.getItem('onDutyTechnician_A'));
+      if (data) {
+        document.getElementById('shiftTime').value = data.shiftTime || '';
+        document.getElementById('shiftDate').value = data.shiftDate || '';
+        document.getElementById('supervisor').value = data.supervisor || '';
+        document.getElementById('osmEng').value = data.osmEng || '';
+        if (Array.isArray(data.teamLeaders)) {
+          const teamLeadersSelect = document.getElementById('teamLeaders');
+          Array.from(teamLeadersSelect.options).forEach(opt => {
+            opt.selected = data.teamLeaders.includes(opt.value);
+          });
+        }
+        if (Array.isArray(data.technicians)) {
+          const techniciansSelect = document.getElementById('technicians');
+          Array.from(techniciansSelect.options).forEach(opt => {
+            opt.selected = data.technicians.includes(opt.value);
+          });
+        }
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const elements = document.querySelectorAll('.choices-multiple');
+      elements.forEach(function(el) {
+        new Choices(el, {
+          removeItemButton: true,
+          searchResultLimit: 10,
+          placeholder: true,
+          placeholderValue: 'Select...',
+          noResultsText: 'No results found',
+          noChoicesText: 'No choices to choose from',
+          itemSelectText: 'Click to select',
+          shouldSort: false
+        });
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+</body>
+</html>
